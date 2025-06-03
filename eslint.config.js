@@ -1,8 +1,8 @@
-import globals from 'globals';
-import js from '@eslint/js';
-import pluginImport from 'eslint-plugin-import';
-import pluginJsdoc from 'eslint-plugin-jsdoc';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import globals from 'globals'
+import js from '@eslint/js'
+import pluginImport from 'eslint-plugin-import'
+import pluginJsdoc from 'eslint-plugin-jsdoc'
+import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default [
   {
@@ -12,8 +12,8 @@ export default [
       '**/coverage/',
       '**/docs/',
       '.prettierrc.json',
-      'jsdoc.json',
-    ],
+      'jsdoc.json'
+    ]
   },
   js.configs.recommended,
   {
@@ -23,22 +23,22 @@ export default [
       sourceType: 'module',
       globals: {
         ...globals.node,
-        ...globals.es2022,
-      },
+        ...globals.es2022
+      }
     },
     plugins: {
       import: pluginImport,
-      jsdoc: pluginJsdoc,
+      jsdoc: pluginJsdoc
     },
     settings: {
       'import/resolver': {
         node: {
-          extensions: ['.js', '.mjs'],
-        },
+          extensions: ['.js', '.mjs']
+        }
       },
       jsdoc: {
-        mode: 'typescript',
-      },
+        mode: 'typescript'
+      }
     },
     rules: {
       'no-console': 'warn',
@@ -49,15 +49,15 @@ export default [
         'ignorePackages',
         {
           js: 'never',
-          mjs: 'never',
-        },
+          mjs: 'never'
+        }
       ],
       ...pluginJsdoc.configs.recommended.rules,
       'jsdoc/require-param-description': 'warn',
       'jsdoc/require-returns-description': 'warn',
       'jsdoc/check-tag-names': [
         'warn',
-        { definedTags: ['openapi', 'swagger'] },
+        { definedTags: ['openapi', 'swagger'] }
       ],
       'jsdoc/require-jsdoc': [
         'warn',
@@ -68,11 +68,11 @@ export default [
             MethodDefinition: true,
             ClassDeclaration: true,
             ArrowFunctionExpression: false,
-            FunctionExpression: false,
-          },
-        },
-      ],
-    },
+            FunctionExpression: false
+          }
+        }
+      ]
+    }
   },
-  eslintConfigPrettier,
-];
+  eslintConfigPrettier
+]

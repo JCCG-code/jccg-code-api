@@ -1,33 +1,28 @@
-import express, { request, response } from 'express';
+import express from 'express'
+import dotenv from 'dotenv'
 
-const app = express();
+// Dot env
+dotenv.config()
 
-const PORT = process.env.PORT || 3000;
+// Routers
+import generateRouter from './routers/generate.router.js'
 
-/**
- * @file Archivo principal de la API.
- * @module index
- * @description Configura y arranca el servidor Express.
- */
+// Initializations
+const app = express()
+const PORT = process.env.PORT || 3000
 
-/**
- * Manejador para la ruta principal (GET /).
- * Devuelve un saludo.
- * @name handleGetRoot
- * @function
- * @memberof module:index
- * @param {request} req - Objeto de solicitud Express.
- * @param {response} res - Objeto de respuesta Express.
- * @returns {void}
- */
-app.get('/', (req, res) => {
-  res.status(200).send('¡Hola Mundo desde Express.js con ES Modules!');
-});
+// Middlewares
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
+// Routes
+app.use('/api/generate', generateRouter)
+
+// Server is listening
 app.listen(PORT, () => {
-  console.log(`Servidor Express escuchando en el puerto ${PORT}`);
-  console.log(`Accede en http://localhost:${PORT}`);
-});
+  console.log(`Servidor Express escuchando en el puerto ${PORT}`)
+  console.log(`Accede en http://localhost:${PORT}`)
+})
 
 // Optional: export to test or other modules
-export default app;
+export default app
