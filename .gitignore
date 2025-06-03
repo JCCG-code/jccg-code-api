@@ -1,0 +1,87 @@
+# Node.js y Gestores de Paquetes
+# -------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json # Si usas npm y quieres que cada desarrollador genere el suyo (menos común para apps)
+                  # Si usas pnpm, el pnpm-lock.yaml SÍ se suele versionar.
+                  # Si usas npm y quieres asegurar dependencias exactas, el package-lock.json SÍ se versiona.
+                  # Decide según tu flujo de trabajo con npm. Para pnpm, pnpm-lock.yaml se versiona.
+
+# Archivos de Entorno
+# --------------------
+.env
+.env.*
+!.env.example # A menudo se versiona un .env.example con variables de ejemplo
+
+# Archivos de Logs
+# -----------------
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Archivos de Cobertura de Pruebas
+# ---------------------------------
+coverage/
+.nyc_output/
+
+# Archivos de Documentación Generada (si no quieres versionarla)
+# --------------------------------------------------------------
+# Si generas la documentación HTML con JSDoc y no la quieres en el repo:
+docs/
+
+# Archivos de IDEs y Editores
+# ----------------------------
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Archivos del Sistema Operativo
+# -------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Thumbnails
+._*
+# Files that might appear in the root of a volume
+.Spotlight-V100
+.Trashes
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Archivos de Docker (si los generas localmente y no son parte del fuente)
+# -----------------------------------------------------------------------
+# A veces se generan archivos temporales de Docker o builds locales
+# que no quieres versionar si el Dockerfile es la fuente de verdad.
+# El .dockerignore ya maneja lo que no entra en la imagen.
+
+# Archivos de Build/Distribución (si los generas y no quieres versionarlos)
+# ------------------------------------------------------------------------
+dist/
+build/
+out/
+
+# Claves de Servicio de GCP (¡MUY IMPORTANTE!)
+# --------------------------------------------
+# Si accidentalmente descargas una clave JSON a tu proyecto,
+# asegúrate de que NUNCA se suba.
+*.json # ¡Cuidado con esto si tienes otros archivos JSON que SÍ quieres versionar!
+       # Es mejor ser más específico si es posible, ej: gcp-service-account-key.json
+       # O colocar las claves FUERA del repositorio.
+       # Dado que ya configuramos GCP_SA_KEY como un secret en GitHub,
+       # no deberías tener el archivo JSON de la clave en tu repo.
+
+# Archivos temporales de instalación de Docker Desktop (ejemplo)
+# Docker Desktop Installer.exe # O cualquier otro instalador descargado
