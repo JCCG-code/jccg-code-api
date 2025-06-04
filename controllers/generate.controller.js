@@ -2,10 +2,15 @@ import { Type } from '@google/genai'
 import * as prompts from '../libs/prompts.js'
 
 /**
- *
- * @param {object} req - Request express object
- * @param {object} res - Response express object
- * @returns
+ * Genera una historia basada en un modelo y una ambientación proporcionados.
+ * @async
+ * @function story
+ * @memberof module:controllers/generateController
+ * @param {object} req - Objeto de solicitud Express.
+ * `req.body` debe contener `model` y `ambience`.
+ * Se espera que `req.genAI` haya sido adjuntado por el middleware `authGoogleAI`.
+ * @param {object} res - Objeto de respuesta Express.
+ * @returns {Promise<void>}
  */
 export const story = async (req, res) => {
   const { body } = req

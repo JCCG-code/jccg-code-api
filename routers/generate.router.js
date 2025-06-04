@@ -1,107 +1,109 @@
 import express from 'express'
-import { authGoogleAI } from '../middlewares/authGoogleAI.js' // Asumo que este middleware existe
+import * as generateController from '../controllers/generate.controller.js'
+import { authGoogleAI } from '../middlewares/authGoogleAI.js'
 
 // Initializations
 const router = express.Router()
 
-// Generate controller
-import * as generateController from '../controllers/generate.controller.js'
-
+// ------------------------------------------------------------------------------------------
+// Generar Historia
+// ------------------------------------------------------------------------------------------
 /**
- * @file Rutas para la generación de contenido creativo multimedia utilizando modelos de IA.
- * @module routes/generateRoutes
- * @requires express
- * @requires middlewares/authGoogleAI
- * @requires controllers/generate.controller
- */
-
-/**
- * Conjunto de rutas relacionadas con la generación de contenido.
- * Base Path: / (relativo al montaje de estas rutas en la app principal, ej. /api/v1/generate)
- * @name GenerateRoutes
- * @namespace GenerateRoutes
- */
-
-/**
- * @typedef {object} StoryRequestBody
- * @property {string} model - El nombre o identificador del modelo de IA a utilizar para la generación (ej. "gemini-1.5-flash-latest"). Obligatorio.
- * @property {string} ambience - La temática o ambientación deseada para la historia (ej. "Dark Souls 2", "Elden Ring", "Córdoba"). Obligatorio.
- */
-
-/**
- * @typedef {object} GeneratedStoryData
- * @property {string} title - Título de la historia generada.
- * @property {string} story - El texto completo de la historia narrativa.
- * @property {string} narrator_tone - Descripción del tono que debe adoptar un narrador para la historia.
- * @property {string} suggested_voice_name - Nombre de la voz sugerida de Gemini TTS para narrar la historia.
- * @property {string[]} music_cues - Array de tres cadenas de texto con sugerencias para música ambiente.
- * @property {string} image_prompt - Prompt detallado para generar una imagen basada en la historia.
- */
-
-/**
- * @typedef {object} SuccessStoryResponse
- * @property {string} status - Estado de la respuesta, siempre "OK" en caso de éxito.
- * @property {GeneratedStoryData} data - El objeto con el paquete de contenido generado.
- */
-
-/**
- * Ruta para generar un paquete de contenido creativo multimedia (historia, prompts, etc.).
- * @name POST/story
- * @function
- * @memberof module:routes/generateRoutes~GenerateRoutes
- * @inner
- * @param {string} path - URL del endpoint: `/story`.
- * @param {function} authGoogleAI - Middleware para autenticación o preparación específica antes de llamar al controlador.
- * @param {function} generateController.story - Controlador que maneja la lógica de generación de la historia.
- * @returns {void} - No devuelve directamente, sino que envía una respuesta HTTP.
+ * @api {post} /api/generate/story Generar Paquete de Historia Creativa
+ * @apiVersion 1.0.0
+ * @apiName PostStory
+ * @apiGroup GeneracionContenido
+ * @apiPermission autenticado (via authGoogleAI middleware)
  *
- * @description
- * Este endpoint recibe el nombre de un modelo de IA y una ambientación temática.
- * Internamente, utiliza un prompt maestro para instruir al modelo de IA especificado
- * para generar un paquete de contenido creativo que incluye un título, una historia narrativa,
- * tono para el narrador, voz sugerida para TTS, pistas para música ambiente y un prompt para imagen.
- * La `X-API-KEY` para la autenticación de esta API debe ser enviada en las cabeceras.
+ * @apiDescription
+ * Este endpoint genera un paquete de contenido creativo completo (historia, título,
+ * sugerencias para TTS, música e imagen) basado en un modelo de IA y una ambientación proporcionados.
+ * Utiliza el servicio de Google GenAI para la generación.
  *
- * @consumes application/json
- * @produces application/json
+ * **Middleware de Autenticación:** Requiere que la solicitud pase por el middleware `authGoogleAI`,
+ * el cual valida la API Key de Google GenAI.
  *
- * @param {StoryRequestBody} request.body.required - El cuerpo de la solicitud en formato JSON.
+ * @apiParam (Cuerpo de la Solicitución JSON) {String} model El identificador del modelo de IA a utilizar (ej. "gemini-1.0-pro").
+ * @apiParam (Cuerpo de la Solicituión JSON) {String} ambience La descripción de la ambientación deseada para la historia.
  *
- * @response {200} SuccessStoryResponse - Respuesta exitosa con el paquete de contenido generado.
- *   @example response - 200 - Ejemplo de respuesta exitosa
- *   {
- *     "status": "OK",
- *     "data": {
- *       "title": "Ecos de Ceniza y Olvido",
- *       "story": "Drangleic se extiende, un sudario de ruinas y ecos...",
- *       "narrator_tone": "Melancólico, reflexivo y desolador",
- *       "suggested_voice_name": "Charon",
- *       "music_cues": [
- *         "Dark ambient drone",
- *         "Symphonic despair",
- *         "Ethereal choir dirge"
- *       ],
- *       "image_prompt": "A lone, heavily armored knight..."
- *     }
- *   }
- * @response {400} ErrorResponse - Solicitud incorrecta (ej. campos obligatorios faltantes).
- *   @example response - 400 - Ejemplo de error de validación
- *   {
- *     "message": "model y ambience son requeridos."
- *   }
- * @response {401} ErrorResponse - No autorizado (ej. API Key de la API propia inválida o faltante).
- *   @example response - 401 - Ejemplo de error de autorización
- *   {
- *     "message": "Unauthorized: Invalid or missing API Key"
- *   }
- * @response {500} ErrorResponse - Error interno del servidor (ej. fallo al contactar la IA).
- *   @example response - 500 - Ejemplo de error interno
- *   {
- *     "message": "Error al generar paquete de contenido.",
- *     "error": "Detalle del error de la IA o del sistema."
- *   }
+ * @apiParamExample {json} Ejemplo de Cuerpo de Solicitud:
+ * HTTP/1.1 POST /api/generate/story
+ * Content-Type: application/json
  *
- * @see {@link module:controllers/generate.controller.story} Para la implementación del controlador.
+ * {
+ * "model": "gemini-1.0-pro",
+ * "ambience": "un bosque encantado durante el crepúsculo"
+ * }
+ *
+ * @apiSuccess (200 OK) {String} status Estado de la respuesta, siempre "OK".
+ * @apiSuccess (200 OK) {Object} data Contenedor de los datos de la historia generada.
+ * @apiSuccess (200 OK) {String} data.title Título conciso y evocador de la historia.
+ * @apiSuccess (200 OK) {String} data.story La narrativa de la historia generada (aprox. 200-250 palabras).
+ * @apiSuccess (200 OK) {String} data.narrator_tone Tono del narrador para la síntesis de voz (TTS).
+ * @apiSuccess (200 OK) {String} data.suggested_voice_name Nombre exacto de una voz de Gemini TTS sugerida.
+ * @apiSuccess (200 OK) {String[]} data.music_cues Lista de 3 cadenas de texto en INGLÉS como pistas para música ambiente.
+ * @apiSuccess (200 OK) {String} data.image_prompt Prompt detallado y descriptivo para la generación de una imagen inspirada en la historia.
+ *
+ * @apiSuccessExample {json} Respuesta Exitosa (200 OK):
+ * HTTP/1.1 200 OK
+ * Content-Type: application/json
+ *
+ * {
+ * "status": "OK",
+ * "data": {
+ * "title": "El Secreto del Arroyo Susurrante",
+ * "story": "En el corazón del bosque Crepuscular, donde los árboles tejen sombras danzantes y el arroyo canta melodías olvidadas, vivía Elara, una guardiana solitaria...",
+ * "narrator_tone": "Misterioso y calmado",
+ * "suggested_voice_name": "Kore",
+ * "music_cues": ["Ethereal Forest Ambient", "Mystical Harp Melody", "Gentle Night Sounds"],
+ * "image_prompt": "A mystical twilight forest, a lone female guardian with silver hair standing by a whispering stream with glowing flora, cinematic fantasy art, soft ethereal lighting, detailed character design."
+ * }
+ * }
+ *
+ * @apiError (400 Bad Request) {String} status Siempre "FAILED".
+ * @apiError (400 Bad Request) {Object} data Contenedor del error.
+ * @apiError (400 Bad Request) {String} data.error Mensaje indicando que `model` o `ambience` son requeridos.
+ *
+ * @apiErrorExample {json} Error: Campos Faltantes (400 Bad Request):
+ * HTTP/1.1 400 Bad Request
+ * Content-Type: application/json
+ *
+ * {
+ * "status": "FAILED",
+ * "data": {
+ * "error": "model or ambience are required in body parameters"
+ * }
+ * }
+ *
+ * @apiError (401 Unauthorized) {String} status Siempre "FAILED".
+ * @apiError (401 Unauthorized) {Object} data Contenedor del error.
+ * @apiError (401 Unauthorized) {String} data.error Mensaje indicando un problema con la API Key de Gemini.
+ *
+ * @apiErrorExample {json} Error: Autenticación Fallida (401 Unauthorized):
+ * HTTP/1.1 401 Unauthorized
+ * Content-Type: application/json
+ *
+ * {
+ * "status": "FAILED",
+ * "data": {
+ * "error": "Gemini API KEY failed or instance creation failed. Please check your credential."
+ * }
+ * }
+ *
+ * @apiError (500 Internal Server Error) {String} status Siempre "FAILED".
+ * @apiError (500 Internal Server Error) {Object} data Contenedor del error.
+ * @apiError (500 Internal Server Error) {String} data.error Mensaje genérico de error del servidor.
+ *
+ * @apiErrorExample {json} Error: Error Interno del Servidor (500 Internal Server Error):
+ * HTTP/1.1 500 Internal Server Error
+ * Content-Type: application/json
+ *
+ * {
+ * "status": "FAILED",
+ * "data": {
+ * "error": "An unexpected error occurred during story generation."
+ * }
+ * }
  */
 router.post('/story', authGoogleAI, generateController.story)
 

@@ -7,10 +7,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "docs": "jsdoc -c jsdoc.json",
+    "docs": "apidoc -i . -o apidoc_output/",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "docker:deploy": "docker build -t jccg-code-api:latest . && docker push juankycg/jccg-code-api:latest"
   },
   "keywords": [
     "api",
@@ -26,13 +27,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.28.0",
-    "docdash": "^2.0.2",
+    "apidoc": "^1.2.0",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsdoc": "^50.7.1",
     "globals": "^16.2.0",
-    "jsdoc": "^4.0.4",
     "nodemon": "^3.1.10",
     "prettier": "^3.5.3"
   },

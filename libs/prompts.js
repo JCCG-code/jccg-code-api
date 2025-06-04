@@ -1,5 +1,11 @@
 /**
- *
+ * Plantilla de prompt para generar una historia.
+ * Contiene marcadores como "@@prompt_ambience" que serán reemplazados dinámicamente.
+ * Define la estructura y los requisitos para el contenido generado por la IA,
+ * incluyendo título, historia, tono del narrador, voz sugerida para TTS,
+ * pistas musicales y un prompt para la generación de imágenes.
+ * @type {string}
+ * @constant
  */
 export const generateStory = `
 Objetivo Principal del Sistema:

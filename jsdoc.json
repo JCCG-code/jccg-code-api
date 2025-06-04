@@ -4,7 +4,14 @@
     "dictionaries": ["jsdoc", "closure"]
   },
   "source": {
-    "include": ["index.js"],
+    "include": [
+      "index.js",
+      "controllers/",
+      "errors/",
+      "libs/",
+      "middlewares/",
+      "routers/"
+    ],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|\\/|\\\\)_|node_modules"
   },
