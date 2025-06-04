@@ -73,6 +73,7 @@ $RECYCLE.BIN/
 dist/
 build/
 out/
+n8n-init.sh
 
 # Claves de Servicio de GCP (¡MUY IMPORTANTE!)
 # --------------------------------------------
