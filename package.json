@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
-    "docker:deploy": "docker build -t jccg-code-api:latest . && docker push juankycg/jccg-code-api:latest"
+    "docker:deploy": "docker build -t juankycg/jccg-code-api:latest . && docker push juankycg/jccg-code-api:latest"
   },
   "keywords": [
     "api",

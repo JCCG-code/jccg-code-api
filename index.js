@@ -9,7 +9,7 @@ import generateRouter from './routers/generate.router.js'
 
 // Initializations
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 4500
 
 // Middlewares
 app.use(express.json())

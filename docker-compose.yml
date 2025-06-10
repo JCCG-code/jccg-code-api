@@ -1,0 +1,10 @@
+services:
+  JCCGCodeAPI:
+    build: .
+    ports:
+      - '4500:4500'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - ./.env
