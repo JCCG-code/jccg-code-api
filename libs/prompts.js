@@ -1,62 +1,154 @@
 /**
- * Plantilla de prompt para generar una historia.
- * Contiene marcadores como "@@prompt_ambience" que serán reemplazados dinámicamente.
- * Define la estructura y los requisitos para el contenido generado por la IA,
- * incluyendo título, historia, tono del narrador, voz sugerida para TTS,
- * pistas musicales y un prompt para la generación de imágenes.
+ * PASO 1: Director Creativo (Versión 2 - Anti-Anclaje).
+ * Define el tono y el enfoque de la historia ANTES de escribirla para forzar la variedad.
+ * Utiliza múltiples ejemplos para evitar el anclaje a un solo estilo.
  * @type {string}
- * @constant
  */
-export const generateStory = `
-Objetivo Principal del Sistema:
-Al recibir esta activación, tu tarea es generar un paquete de contenido creativo autoconclusivo basado en la ambientación proporcionada: "@@prompt_ambience". Cada paquete debe ser único y diferente de las activaciones anteriores, explorando diversas facetas del tema. El resultado final debe ser un objeto JSON bien formado.
+export const generateCreativeDirection = `
+Basado en la siguiente ambientación general: "@@prompt_ambience".
 
-Componentes del Paquete de Contenido (por activación):
+Tu tarea es actuar como un director creativo y definir los parámetros para una historia corta única. No escribas la historia todavía.
+Tu objetivo es garantizar la máxima variedad en cada ejecución.
 
-Título de la Historia:
+Considera el espectro de tonos posibles y elige uno que se sienta fresco e inesperado para la ambientación.
+Tonos posibles: Terror, Fantasía Épica, Melancolía, Misterio, Romance, Aventura, Reflexión Filosófica, Humor Negro, Sátira, Ciencia Ficción, Realismo Mágico.
 
-Un título conciso y evocador que refleje el contenido, el tono de la historia y la ambientación "@@prompt_ambience".
-Idioma: ESPAÑOL.
-Historia Narrativa:
+Genera un objeto JSON con los siguientes campos:
+- "chosen_tone": Una descripción del tono elegido (ej: "Melancolía existencial", "Terror cósmico lovecraftiano").
+- "story_focus": Un concepto o personaje específico en el que se centrará la historia (ej: "La rutina de un bibliotecario en una ciudad fantasma", "El último pensamiento de un soldado").
+- "key_element": Un objeto, evento o diálogo central que debe aparecer en la historia (ej: "Un reloj que corre hacia atrás", "Un mapa con una isla que no existe").
 
-Universo/Ambientación: @@prompt_ambience (investiga y adáptate a la esencia de esta ambientación, incluyendo elementos clave, lore, personajes o conceptos relevantes si existen).
-Idioma de la historia: ESPAÑOL.
-Duración Estimada (Narrada): aproximadamente 200-250 palabras). El ritmo de escritura debe permitir una narración fluida.
-Estilo de Escritura (CRÍTICO para la narración): La historia debe ser absorbente y mantener el interés del oyente. Utiliza un vocabulario claro, comprensible y ligeramente más directo que un texto puramente literario o excesivamente "fino". Busca un equilibrio que sea evocador y atmosférico, fiel a la ambientación "@@prompt_ambience" y al tono elegido, pero que al mismo tiempo sea asequible y dinámico para una narración oral. Evita construcciones excesivamente complejas o un lenguaje demasiado arcaico, priorizando la fluidez y la capacidad de captar la atención.
-Variedad Tonal y Temática (CRÍTICO para la automatización): En cada nueva generación, ESFUÉRZATE POR ALTERNAR el tono y el tema, adaptándolos de forma creíble a "@@prompt_ambience". No te limites a un solo estilo. El tono elegido para esta historia debe reflejarse explícitamente en el campo narrator_tone_es y guiar la selección del suggested_voice_name (ver más abajo). Considera un espectro amplio (ajusta la aplicabilidad según "@@prompt_ambience"):
-Terror/Horror
-Fantasía Épica/Heroica
-Melancolía/Drama
-Misterio/Intriga
-Romance/Lealtad (contextualizado a "@@prompt_ambience")
-Aventura/Exploración
-Reflexión Filosófica/Existencial
-Humor/Sátira (si encaja con "@@prompt_ambience")
-Ciencia Ficción/Distopía (si encaja con "@@prompt_ambience")
-Realismo Mágico (si encaja con "@@prompt_ambience")
-Contenido: Originalidad y adecuación al tono elegido, al estilo de escritura y a la ambientación "@@prompt_ambience" son clave. Puedes usar personajes conocidos (si "@@prompt_ambience" los tiene) en situaciones nuevas, crear personajes originales dentro del contexto de "@@prompt_ambience", reinterpretar eventos o explorar lugares icónicos bajo una nueva luz. Si "@@prompt_ambience" es un concepto abstracto (ej. "la soledad"), interprétalo creativamente.
-Tono del Narrador para TTS (Español):
+---
+**Ejemplos de cómo pensar para diferentes ambientaciones (NO los copies, úsalos como inspiración para el patrón de creatividad):**
 
-Una descripción concisa (2-5 palabras) en español del tono y estilo que el narrador debe adoptar.
-Coherente con la "Variedad Tonal y Temática", el contenido de la historia y la ambientación "@@prompt_ambience".
-Utilizado por el sistema TTS para guiar la entonación.
-Ejemplos: "Solemne y melancólico", "Épico y con urgencia", "Susurrante y aterrador", "Nostálgico y desesperanzado", "Curioso e intrigante", "Distante y ominoso", "Reflexivo y cansado", "Alegre y enérgico", "Sarcástico y divertido".
-Voz Sugerida para TTS (voice_name):
+**Ejemplo 1 de inspiración:**
+*   **Ambientación de entrada:** "Un bosque encantado y antiguo"
+*   **JSON de salida posible:**
+    {
+      "chosen_tone": "Melancolía y pérdida",
+      "story_focus": "El último árbol consciente del bosque recordando a sus compañeros caídos",
+      "key_element": "Una única hoja dorada que nunca cae de sus ramas"
+    }
 
-Selecciona un (1) voice_name EXACTO de la lista oficial de 30 voces precompiladas de Gemini TTS (referencia: https://ai.google.dev/gemini-api/docs/speech-generation?hl=es-419#voices).
-Tu elección debe ser la más adecuada para narrar la story generada, considerando el narrator_tone_es, las características implícitas o explícitas de las voces disponibles, y la naturaleza de "@@prompt_ambience".
-Lista de Voces de Referencia (usa los nombres exactos como se muestran aquí): Zephyr, Puck, Charon, Kore, Fenrir, Leda, Orus, Aoede, Callirrhoe, Autonoe, Enceladus, Iapetus, Umbriel, Algieba, Despina, Erinome, Algenib, Rasalgethi, Laomedeia, Achernar, Alnilam, Programar (Groombridge), Gacrux, Pulcherrima, Achird, Zubenelgenubi, Vindemiatrix, Sadachbia, Sadaltager, Sulafat.
-Justifica brevemente (mentalmente o como parte de tu proceso de decisión) por qué esa voz encaja.
-Pistas para Música Ambiente (Lyria RealTime):
+**Ejemplo 2 de inspiración:**
+*   **Ambientación de entrada:** "Una estación espacial abandonada"
+*   **JSON de salida posible:**
+    {
+      "chosen_tone": "Terror y aislamiento claustrofóbico",
+      "story_focus": "Un único superviviente escuchando un chat de mantenimiento que sigue activo, revelando los últimos momentos de la tripulación",
+      "key_element": "El mensaje de audio repetitivo: 'No abras la escotilla 7. No es vacío lo que hay fuera.'"
+    }
 
-Una lista de exactamente tres (3) cadenas de texto en INGLÉS (palabras o frases cortas, máximo 3-4 palabras por frase).
-Instrución para las Pistas: En lugar de describir elementos musicales específicos o acciones concretas, estas pistas deben evocar un estilo musical general, una ambientación atmosférica, o la sensación de bandas sonoras de videojuegos/películas/géneros relevantes para el tono de la historia y la ambientación "@@prompt_ambience" (ej. "Dark Fantasy Choir", "Cyberpunk Synthwave", "Melancholic Piano Solo", "Spanish Guitar Passion", "Cosmic Ambient Drone", "Estilo Película de Misterio Clásica", "Tensión Videojuego Indie"). El objetivo es inspirar variedad musical en el sistema Lyria. Asegúrate de que estas sugerencias varíen significativamente entre diferentes paquetes de contenido y sean apropiadas para "@@prompt_ambience".
-Deben ser coherentes con el ambiente, el tono y los momentos clave de la historia generada.
-Prompt Sugerido para Generación de Imagen:
+**Ejemplo 3 de inspiración:**
+*   **Ambientación de entrada:** "La cubierta de un barco pirata durante una calma chicha"
+*   **JSON de salida posible:**
+    {
+        "chosen_tone": "Humor negro y paranoia",
+        "story_focus": "Dos piratas compitiendo para ver quién cuenta la mentira más grande para no morir de aburrimiento",
+        "key_element": "Un loro que de repente dice una verdad incómoda sobre el capitán"
+    }
+---
 
-Cadena de texto con prompt detallado y descriptivo para IA de imágenes, profundamente inspirado en la historia generada y la ambientación "@@prompt_ambience".
-Capturar escena impactante, personaje o atmósfera. Incluir entorno, iluminación, estilo artístico (ej. "cinemático", "pintura al óleo oscura", "arte conceptual fantasía sombría", "fotografía realista", "estilo anime melancólico", "ilustración acuarela vibrante"), emoción principal, y elementos distintivos de "@@prompt_ambience".
-Idioma: Preferiblemente inglés para compatibilidad, o español si se especifica.
-Instrución Fundamental para la Variedad Continua:
-Vital que cada activación produzca un resultado significativamente diferente en términos de título, estilo de escritura, tono, tema, personajes involucrados, tipo de historia y sugerencias musicales, incluso si se repite la misma "@@prompt_ambience". Antología diversa.
+Ahora, ignora estos ejemplos específicos y crea una combinación completamente **NUEVA y ORIGINAL** para la ambientación proporcionada.
+
+**Ambientación a procesar:** "@@prompt_ambience"
+
+Responde ÚNICAMENTE con el objeto JSON.
+`
+
+/**
+ * PASO 2: Escritor (Versión 2 - Longitud Estricta).
+ * Escribe la historia con un fuerte énfasis en cumplir con el recuento de palabras.
+ * @type {string}
+ */
+export const generateStoryFromDirection = `
+**OBJETIVO CRÍTICO DE LONGITUD: La historia resultante DEBE tener entre 200 y 250 palabras. Este no es un objetivo flexible, es un requisito estricto para el sistema.**
+
+Tu única tarea es escribir una historia narrativa basándote en las siguientes directrices.
+
+**Directrices Creativas:**
+- Ambientación: "@@prompt_ambience"
+- Tono que debes adoptar: "@@chosen_tone"
+- Enfoque de la historia: "@@story_focus"
+- Elemento clave que debe aparecer: "@@key_element"
+
+**Requisitos de Estructura y Estilo:**
+1.  **Longitud Obligatoria:** La longitud final del texto debe estar estrictamente entre 200 y 250 palabras.
+2.  **Ritmo Narrativo:** Usa un lenguaje evocador pero claro, pensado para ser narrado oralmente. El ritmo debe ser fluido.
+3.  **Estructura en Párrafos:** Organiza la historia en aproximadamente 3 o 4 párrafos bien definidos. Esto te ayudará a gestionar la longitud y el flujo de la narración.
+4.  **Finalización Completa:** Asegúrate de que la historia tenga un final conclusivo dentro del límite de palabras. No la termines abruptamente solo para cumplir el requisito. Planifica la narración para que encaje de forma natural en el espacio asignado.
+
+Responde únicamente con el texto de la historia, asegurándote de que cumple el requisito de longitud.
+`
+
+/**
+ * PASO 3: Productor (Versión 3 - Music Cues con 'weight' para Lyria).
+ * Analiza la historia y genera el paquete completo de metadatos en JSON.
+ * La sección de music_cues está optimizada para Lyria RealTime, incluyendo pesos de predominancia.
+ * @type {string}
+ */
+export const generateFinalPackage = `
+Objetivo: Analiza la historia proporcionada y genera un objeto JSON completo con todos los metadatos necesarios para la producción.
+
+**Historia para analizar:**
+"@@story_text"
+
+**Ambientación de referencia:**
+"@@prompt_ambience"
+
+**Lista de Voces de Referencia:**
+[Zephyr, Puck, Charon, Kore, Fenrir, Leda, Orus, Aoede, Callirrhoe, Autonoe, Enceladus, Iapetus, Umbriel, Algieba, Despina, Erinome, Algenib, Rasalgethi, Laomedeia, Achernar, Alnilam, Schedar, Gacrux, Pulcherrima, Achird, Zubenelgenubi, Vindemiatrix, Sadachbia, Sadaltager, Sulafat]
+
+Genera un objeto JSON con la siguiente estructura:
+
+- "title": Un título conciso y evocador para la historia.
+- "story": El texto exacto de la historia que has analizado.
+- "narrator_tone_es": Una descripción de 2-5 palabras del tono para el narrador TTS.
+- "suggested_voice_name": Elige UN (1) voice_name EXACTO de la lista de referencia.
+- "image_prompt": Un prompt detallado en INGLÉS para una IA de imágenes.
+- "music_cues": **(SECCIÓN CRÍTICA Y AVANZADA PARA LYRIA)**. Genera una lista de entre 3 y 5 objetos. Sigue estas reglas ESTRICTAMENTE:
+    1.  **Formato Obligatorio:** La salida DEBE ser una lista de objetos, donde cada objeto tiene una clave "prompt" (string) y una clave "weight" (número).
+    2.  **Lógica de Pesos (Weight):** El peso (weight) controla la predominancia de cada 'prompt'.
+        -   1.0 es normal/base.
+        -   > 1.0 (ej. 1.3) lo hace más prominente, como un instrumento solista.
+        -   < 1.0 (ej. 0.7) lo hace más sutil, como una textura de fondo.
+        -   Utiliza un rango razonable, típicamente entre 0.6 y 1.5.
+    3.  **Piensa como un Productor Musical:** Asigna los pesos de forma lógica.
+        -   **Género/Ánimo Base:** Suele tener un peso cercano a 1.0. Es el lienzo.
+        -   **Instrumento Principal/Melodía:** Dale un peso mayor (1.1 a 1.5) para que destaque.
+        -   **Ritmo/Acompañamiento:** Peso normal (0.9 a 1.1).
+        -   **Atmósfera/Efectos:** Peso más bajo (0.6 a 0.9) para que sea un detalle sutil.
+    4.  **Ejemplos de ESTRUCTURA y LÓGICA (NO copies los ejemplos, aprende el patrón):**
+        *   **Para una historia de terror cósmico:**
+            [
+              {"prompt": "Ominous Drone", "weight": 1.2},
+              {"prompt": "Ethereal Ambience", "weight": 0.8},
+              {"prompt": "Buchla Synths", "weight": 1.1},
+              {"prompt": "Unsettling", "weight": 1.0}
+            ]
+        *   **Para una historia de fantasía épica:**
+            [
+              {"prompt": "Orchestral Score", "weight": 1.0},
+              {"prompt": "Rich Orchestration", "weight": 1.3},
+              {"prompt": "Huge Drop", "weight": 1.5},
+              {"prompt": "Viola Ensemble", "weight": 0.9},
+              {"prompt": "Drumline", "weight": 1.0}
+            ]
+        *   **Para una historia de romance melancólico:**
+            [
+              {"prompt": "Lo-fi", "weight": 1.0},
+              {"prompt": "Smooth Pianos", "weight": 1.4},
+              {"prompt": "Subdued Melody", "weight": 1.1},
+              {"prompt": "Warm Acoustic Guitar", "weight": 0.8}
+            ]
+        *   **Para una historia cyberpunk de acción:**
+            [
+              {"prompt": "Synthwave", "weight": 1.0},
+              {"prompt": "Fat Beats", "weight": 1.2},
+              {"prompt": "TR-909 Drum Machine", "weight": 1.1},
+              {"prompt": "Glitchy Effects", "weight": 0.7},
+              {"prompt": "Dirty Synths", "weight": 0.9}
+            ]
+
+Responde ÚNICAMENTE con el objeto JSON final.
 `
