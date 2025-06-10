@@ -1,0 +1,46 @@
+# cloudbuild.yaml
+steps:
+  # Paso 1: Construir la imagen de Docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'europe-southwest1-docker.pkg.dev/fit-land-461912-e9/jccg-code-api-repo/jccg-code-api:${SHORT_SHA}'
+      - '.'
+
+  # Paso 2: Subir la imagen a Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'europe-southwest1-docker.pkg.dev/fit-land-461912-e9/jccg-code-api-repo/jccg-code-api:${SHORT_SHA}'
+
+  # Paso 3: Desplegar la nueva versión en Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/gcloud'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      # Este será el nombre de tu servicio en Cloud Run.
+      - 'jccg-code-api'
+
+      # Le decimos a Cloud Run qué imagen exacta desplegar.
+      - '--image'
+      - 'europe-southwest1-docker.pkg.dev/fit-land-461912-e9/jccg-code-api-repo/jccg-code-api:${SHORT_SHA}'
+
+      # La región donde se desplegará el servicio.
+      - '--region'
+      - 'europe-southwest1'
+
+      # Plataforma gestionada por Google.
+      - '--platform'
+      - 'managed'
+
+      # Permite que la URL sea pública. Si es una API privada, considera quitar esta línea.
+      - '--allow-unauthenticated'
+
+# Especificamos la imagen final para que la UI de Cloud Build la muestre claramente.
+images:
+  - 'europe-southwest1-docker.pkg.dev/fit-land-461912-e9/jccg-code-api-repo/jccg-code-api:${SHORT_SHA}'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
