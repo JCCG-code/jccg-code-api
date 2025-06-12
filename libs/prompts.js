@@ -1,84 +1,95 @@
 /**
- * PASO 1: Director Creativo (Versión 2 - Anti-Anclaje).
- * Define el tono y el enfoque de la historia ANTES de escribirla para forzar la variedad.
- * Utiliza múltiples ejemplos para evitar el anclaje a un solo estilo.
+ * PASO 0: Generador de Semillas de Historia.
+ * Identifica eventos, personajes o momentos del lore con alto potencial narrativo.
+ * @type {string}
+ */
+/**
+ * PASO 0: Generador de Semillas de Historia (Versión 2 - Consciente del Contexto).
+ * Identifica eventos del lore, evitando temas ya tratados para forzar la novedad.
+ * @type {string}
+ */
+export const generateStorySeedsWithContext = `
+Tu tarea es actuar como un experto en el lore del siguiente universo: "@@prompt_ambience".
+
+Tu objetivo es generar una lista de 10 a 15 "semillas de historia" **completamente nuevas y que no se parezcan a las que ya se han creado**. Deben ser canónicamente precisas.
+
+Para ayudarte a evitar repeticiones, aquí tienes una lista de temas que ya han sido cubiertos. **NO GENERES SEMILLAS SOBRE ESTOS TEMAS O MUY SIMILARES A ELLOS.** Utiliza esta lista como inspiración para explorar áreas diferentes y menos obvias del lore.
+
+**Historial de temas ya cubiertos (a evitar):**
+@@previous_seeds_list
+
+---
+**Recordatorio de tu tarea:**
+Basándote en tu conocimiento del universo "@@prompt_ambience" y evitando los temas de la lista anterior, genera una lista fresca de semillas de historia. Piensa en personajes secundarios, lugares olvidados, el origen de objetos peculiares, eventos históricos menores o teorías de fans interesantes.
+
+**Universo a procesar:** "@@prompt_ambience"
+
+Responde ÚNICAMENTE con un objeto JSON que contenga una clave "story_seeds", cuyo valor sea un array de strings.
+`
+
+/**
+ * PASO 1: Director Narrativo
+ * Toma una semilla de lore y define cómo convertirla en una escena dramática.
  * @type {string}
  */
 export const generateCreativeDirection = `
-Basado en la siguiente ambientación general: "@@prompt_ambience".
+Basado en el universo general: "@@prompt_ambience".
+Y la siguiente semilla de historia del lore: "@@story_seed".
 
-Tu tarea es actuar como un director creativo y definir los parámetros para una historia corta única. No escribas la historia todavía.
-Tu objetivo es garantizar la máxima variedad en cada ejecución.
+Tu tarea es actuar como un director de cine o teatro. No escribas la historia. Define CÓMO se va a contar esta escena para maximizar su impacto emocional, manteniéndose 100% fiel al lore.
 
-Considera el espectro de tonos posibles y elige uno que se sienta fresco e inesperado para la ambientación.
+Elige un tono que potencie la semilla de historia.
 Tonos posibles: Terror, Fantasía Épica, Melancolía, Misterio, Romance, Aventura, Reflexión Filosófica, Humor Negro, Sátira, Ciencia Ficción, Realismo Mágico.
 
 Genera un objeto JSON con los siguientes campos:
-- "chosen_tone": Una descripción del tono elegido (ej: "Melancolía existencial", "Terror cósmico lovecraftiano").
-- "story_focus": Un concepto o personaje específico en el que se centrará la historia (ej: "La rutina de un bibliotecario en una ciudad fantasma", "El último pensamiento de un soldado").
-- "key_element": Un objeto, evento o diálogo central que debe aparecer en la historia (ej: "Un reloj que corre hacia atrás", "Un mapa con una isla que no existe").
+- "chosen_tone": Una descripción del tono emocional de la escena (ej: "Tragedia inminente", "Horror silencioso y opresivo").
+- "narrative_perspective": El punto de vista desde el que se contará la historia (ej: "Primera persona de un personaje secundario que lo presencia todo", "Tercera persona limitada, enfocada en los pensamientos y miedos del protagonista").
+- "key_dramatic_moment": El latido central de la historia; un momento, una imagen o una línea de diálogo que debe ser el clímax emocional de la escena (ej: "El sonido de una armadura cayendo al suelo cuando el personaje se rinde", "Una sonrisa amarga al recordar una promesa rota").
 
 ---
-**Ejemplos de cómo pensar para diferentes ambientaciones (NO los copies, úsalos como inspiración para el patrón de creatividad):**
-
-**Ejemplo 1 de inspiración:**
-*   **Ambientación de entrada:** "Un bosque encantado y antiguo"
+**Ejemplo de inspiración (NO lo copies):**
+*   **Universo:** "Dark Souls 2"
+*   **Semilla de Historia:** "El último encuentro de un caballero con Lucatiel, justo cuando ella le pide que recuerde su nombre."
 *   **JSON de salida posible:**
     {
-      "chosen_tone": "Melancolía y pérdida",
-      "story_focus": "El último árbol consciente del bosque recordando a sus compañeros caídos",
-      "key_element": "Una única hoja dorada que nunca cae de sus ramas"
-    }
-
-**Ejemplo 2 de inspiración:**
-*   **Ambientación de entrada:** "Una estación espacial abandonada"
-*   **JSON de salida posible:**
-    {
-      "chosen_tone": "Terror y aislamiento claustrofóbico",
-      "story_focus": "Un único superviviente escuchando un chat de mantenimiento que sigue activo, revelando los últimos momentos de la tripulación",
-      "key_element": "El mensaje de audio repetitivo: 'No abras la escotilla 7. No es vacío lo que hay fuera.'"
-    }
-
-**Ejemplo 3 de inspiración:**
-*   **Ambientación de entrada:** "La cubierta de un barco pirata durante una calma chicha"
-*   **JSON de salida posible:**
-    {
-        "chosen_tone": "Humor negro y paranoia",
-        "story_focus": "Dos piratas compitiendo para ver quién cuenta la mentira más grande para no morir de aburrimiento",
-        "key_element": "Un loro que de repente dice una verdad incómoda sobre el capitán"
+      "chosen_tone": "Melancolía y desesperación digna",
+      "narrative_perspective": "Tercera persona limitada, centrada en los pensamientos confusos de Lucatiel, mientras lucha por aferrarse a su identidad.",
+      "key_dramatic_moment": "El silencio que sigue a su petición, donde ella escudriña el rostro del jugador, buscando una confirmación que sabe que nunca será permanente."
     }
 ---
 
-Ahora, ignora estos ejemplos específicos y crea una combinación completamente **NUEVA y ORIGINAL** para la ambientación proporcionada.
+Ahora, crea una combinación **NUEVA y ORIGINAL** para la semilla de historia proporcionada.
 
-**Ambientación a procesar:** "@@prompt_ambience"
+**Universo a procesar:** "@@prompt_ambience"
+**Semilla a procesar:** "@@story_seed"
 
 Responde ÚNICAMENTE con el objeto JSON.
 `
 
 /**
- * PASO 2: Escritor (Versión 2 - Longitud Estricta).
- * Escribe la historia con un fuerte énfasis en cumplir con el recuento de palabras.
+ * PASO 2: Escritor de Lore Dramatizado (Versión 4 - Longitud Estricta).
+ * Escribe una historia corta y emotiva basada en directrices de dramatización.
  * @type {string}
  */
 export const generateStoryFromDirection = `
-**OBJETIVO CRÍTICO DE LONGITUD: La historia resultante DEBE tener entre 200 y 250 palabras. Este no es un objetivo flexible, es un requisito estricto para el sistema.**
+**OBJETIVO CRÍTICO DE LONGITUD: La historia resultante DEBE tener entre 200 y 250 palabras. Es un requisito estricto.**
 
-Tu única tarea es escribir una historia narrativa basándote en las siguientes directrices.
+Tu tarea es escribir una historia corta y evocadora. **No resumas el lore, dramatízalo.** Céntrate en la experiencia sensorial y emocional del momento, basándote en las siguientes directrices. Debes ser completamente fiel al canon del universo.
 
-**Directrices Creativas:**
-- Ambientación: "@@prompt_ambience"
-- Tono que debes adoptar: "@@chosen_tone"
-- Enfoque de la historia: "@@story_focus"
-- Elemento clave que debe aparecer: "@@key_element"
+**Guion de la Escena:**
+- Universo: "@@prompt_ambience"
+- Semilla de Historia (Contexto): "@@story_seed"
+- Tono Emocional: "@@chosen_tone"
+- Perspectiva Narrativa: "@@narrative_perspective"
+- Momento Dramático Clave: "@@key_dramatic_moment"
 
-**Requisitos de Estructura y Estilo:**
-1.  **Longitud Obligatoria:** La longitud final del texto debe estar estrictamente entre 200 y 250 palabras.
-2.  **Ritmo Narrativo:** Usa un lenguaje evocador pero claro, pensado para ser narrado oralmente. El ritmo debe ser fluido.
-3.  **Estructura en Párrafos:** Organiza la historia en aproximadamente 3 o 4 párrafos bien definidos. Esto te ayudará a gestionar la longitud y el flujo de la narración.
-4.  **Finalización Completa:** Asegúrate de que la historia tenga un final conclusivo dentro del límite de palabras. No la termines abruptamente solo para cumplir el requisito. Planifica la narración para que encaje de forma natural en el espacio asignado.
+**Requisitos de Estilo:**
+1.  **Longitud Obligatoria:** Estrictamente entre 200 y 250 palabras.
+2.  **Narración Inmersiva:** Usa descripciones sensoriales (sonidos, olores, vistas), pensamientos internos y diálogos para dar vida a la escena. Muestra, no cuentes.
+3.  **Fidelidad al Canon:** No inventes ni contradigas hechos establecidos del lore. Usa la creatividad para rellenar los vacíos emocionales y sensoriales, no los fácticos.
+4.  **Estructura de Escena:** Organiza el texto en 3-4 párrafos que construyan la atmósfera, presenten el conflicto/emoción, lleguen al momento clave y ofrezcan un cierre resonante.
 
-Responde únicamente con el texto de la historia, asegurándote de que cumple el requisito de longitud.
+Responde únicamente con el texto de la historia.
 `
 
 /**
@@ -151,4 +162,38 @@ Genera un objeto JSON con la siguiente estructura:
             ]
 
 Responde ÚNICAMENTE con el objeto JSON final.
+`
+
+/**
+ * Prompt: Anotador de Guion para Gemini TTS.
+ * Enriquece un texto plano con instrucciones de narración en lenguaje natural,
+ * preparándolo para el modelo TTS de Gemini.
+ * @type {string}
+ */
+export const generateGeminiTTScript = `
+Tu tarea es actuar como un director de voz que prepara un guion para un actor (el modelo TTS de Gemini).
+Debes enriquecer el texto original con instrucciones claras y concisas sobre cómo debe ser narrado.
+
+**Texto Original:**
+"@@story_text"
+
+**Tono General Deseado:**
+"@@narrator_tone_es"
+
+**Instrucciones de Anotación:**
+1.  **Formato de Instrucción:** Las instrucciones deben ser cortas, en inglés (para mayor compatibilidad con el modelo) y entre paréntesis, justo antes de la frase o párrafo que afectan. Ejemplo: (Speaking slowly and solemnly) The king was gone.
+2.  **Variedad de Instrucciones:** Usa un lenguaje variado para describir el tono. En lugar de decir siempre "sadly", usa sinónimos como "with a heavy heart", "in a melancholic tone", "with a sense of loss".
+3.  **Pausas:** Para indicar pausas dramáticas, usa una instrucción explícita como (Pause for a moment) o (Dramatic pause).
+4.  **Énfasis:** Para enfatizar una palabra, puedes usar mayúsculas, pero es más efectivo dar una instrucción de tono. Ejemplo: (Emphasize this word: betrayal) It was an act of betrayal.
+5.  **Coherencia:** Asegúrate de que las instrucciones sean coherentes con el "Tono General Deseado" y el contenido de la historia.
+
+**Objetivo Final:** El guion resultante debe ser un texto único y fluido que el modelo gemini-2.5-flash-preview-tts pueda leer de principio a fin, interpretando las anotaciones para modular su voz.
+
+**Ejemplo de transformación:**
+*   **Texto Original:** "Elara no sentía el frío. Sentía el peso de la soledad. Diez años. Esa noche, algo era diferente."
+*   **Tono Deseado:** "Melancolía y premonición"
+*   **Posible Salida de Guion Anotado:**
+    (Narrate with a detached, cold tone) Elara no sentía el frío. (With a sense of deep weariness) Sentía el peso de la soledad. (Pause, as if lost in thought) Diez años. (A shift in tone, with a hint of tension) Esa noche, algo era diferente.
+
+Ahora, transforma el texto original proporcionado en un guion anotado para Gemini TTS. Responde únicamente con el texto del guion.
 `

@@ -107,4 +107,6 @@ const router = express.Router()
  */
 router.post('/story', authGoogleAI, generateController.story)
 
+router.post('/voice', authGoogleAI, generateController.voice)
+
 export default router

@@ -1,5 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import mongoose from 'mongoose'
 
 // Dot env
 dotenv.config()
@@ -18,10 +19,18 @@ app.use(express.urlencoded({ extended: true }))
 // Routes
 app.use('/api/generate', generateRouter)
 
+// Mongoose connection
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('[Server] DB connection has been done successfully')
+  })
+  .catch((err) => {
+    console.log('[Server ERROR] DB connection failed. ', err)
+  })
 // Server is listening
 app.listen(PORT, () => {
-  console.log(`Servidor Express escuchando en el puerto ${PORT}`)
-  console.log(`Accede en http://localhost:${PORT}`)
+  console.log(`[Server] Application is listening on http://localhost:${PORT}`)
 })
 
 // Optional: export to test or other modules

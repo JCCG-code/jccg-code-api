@@ -1,5 +1,5 @@
 services:
-  JCCGCodeAPI:
+  my-api:
     build: .
     ports:
       - '4500:4500'
