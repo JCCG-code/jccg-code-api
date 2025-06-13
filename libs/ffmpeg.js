@@ -2,7 +2,12 @@ import { spawn } from 'node:child_process'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
-export const saveMp3File = async (filename, pcmData, sampleRate = 24000) => {
+export const saveMp3File = async (
+  filename,
+  pcmData,
+  sampleRate = 24000,
+  channels = 1
+) => {
   return new Promise((resolve, reject) => {
     // FFmpeg arguments
     const ffmpegArgs = [
@@ -12,9 +17,9 @@ export const saveMp3File = async (filename, pcmData, sampleRate = 24000) => {
       // Sample rate
       '-ar',
       `${sampleRate}`,
-      // Mono config
+      // Channels config
       '-ac',
-      '1',
+      `${channels}`,
       // 'pipe' 0 (stdin)
       '-i',
       'pipe:0',

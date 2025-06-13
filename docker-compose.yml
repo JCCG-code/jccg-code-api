@@ -7,6 +7,11 @@ services:
       - '4500:4500'
     env_file:
       - ./.env
+    volumes:
+      - type: bind
+        source: ${APPDATA}/gcloud/application_default_credentials.json
+        target: /root/.config/gcloud/application_default_credentials.json
+        read_only: true
     develop:
       watch:
         - path: .

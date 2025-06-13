@@ -1,7 +1,13 @@
 // Local imports
 import * as generateStory from '../helpers/generateStory.js'
 import * as generateVoice from '../helpers/generateVoice.js'
+import * as generateMusic from '../helpers/generateMusic.js'
+import * as generateImages from '../helpers/generateImages.js'
+import * as jsonHandler from '../helpers/jsonHandler.js'
 import * as storySeedDB from '../helpers/db/storySeedDB.js'
+
+// Path output file
+const outputPath = '/tmp/output.json'
 
 /**
  * Genera una historia basada en un modelo y una ambientación proporcionados.
@@ -68,6 +74,11 @@ export const story = async (req, res) => {
       body.ambience,
       story.story
     )
+    // Saving into output json file
+    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
+    outputData.story = finalPackage
+    outputData.seed = seed.seed_text
+    await jsonHandler.writeJson(outputPath, outputData)
     // Return statement
     return res.status(200).send({ status: 'OK', data: finalPackage })
   } catch (err) {
@@ -112,8 +123,83 @@ export const voice = async (req, res) => {
       TTSStory,
       body.suggested_voice_name
     )
+    // Saving into output json file
+    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
+    outputData.voiceGen = voiceGen
+    await jsonHandler.writeJson(outputPath, outputData)
     // Return statement
     return res.status(200).send({ status: 'OK', data: voiceGen })
+  } catch (err) {
+    res
+      .status(err?.status || 500)
+      .send({ status: 'FAILED', data: { error: err?.message || err } })
+  }
+}
+
+export const lyriaMusic = async (req, res) => {
+  const { body } = req
+  // Mandatory fields
+  if (!body.music_cues || !body.duration) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: {
+        error: 'music_cues or duration are required in body parameters'
+      }
+    })
+  }
+  try {
+    // Generating music by Lyria Realtime
+    const response = await generateMusic.generateLyriaMusic(
+      body.music_cues,
+      body.duration + 5
+    )
+    // Saving into output json file
+    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
+    outputData.lyriaGen = response
+    await jsonHandler.writeJson(outputPath, outputData)
+    // Return statement
+    return res.status(200).send({ status: 'OK', data: response })
+  } catch (err) {
+    res
+      .status(err?.status || 500)
+      .send({ status: 'FAILED', data: { error: err?.message || err } })
+  }
+}
+
+export const images = async (req, res) => {
+  const { body } = req
+  // Mandatory fields
+  if (!body.ambience || !body.story_seed || !body.story) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: {
+        error: 'story is required in body parameters'
+      }
+    })
+  }
+  if (!req.genAI) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: { error: 'genAI not provided' }
+    })
+  }
+  try {
+    // Extracts visual tokens
+    const visualTokens = await generateImages.extractVisualTokens(
+      req.genAI,
+      body.ambience,
+      body.story_seed,
+      body.story
+    )
+    // Generates shot list from tokens
+    const shotList = await generateImages.generateShotListFromTokens(
+      req.genAI,
+      visualTokens,
+      body.story
+    )
+    console.log(shotList)
+    // Return statement
+    return res.status(200).send({ status: 'OK' })
   } catch (err) {
     res
       .status(err?.status || 500)

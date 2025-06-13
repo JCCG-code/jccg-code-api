@@ -116,10 +116,9 @@ Genera un objeto JSON con la siguiente estructura:
 - "story": El texto exacto de la historia que has analizado.
 - "narrator_tone_es": Una descripción de 2-5 palabras del tono para el narrador TTS.
 - "suggested_voice_name": Elige UN (1) voice_name EXACTO de la lista de referencia.
-- "image_prompt": Un prompt detallado en INGLÉS para una IA de imágenes.
 - "music_cues": **(SECCIÓN CRÍTICA Y AVANZADA PARA LYRIA)**. Genera una lista de entre 3 y 5 objetos. Sigue estas reglas ESTRICTAMENTE:
-    1.  **Formato Obligatorio:** La salida DEBE ser una lista de objetos, donde cada objeto tiene una clave "prompt" (string) y una clave "weight" (número).
-    2.  **Lógica de Pesos (Weight):** El peso (weight) controla la predominancia de cada 'prompt'.
+    1.  **Formato Obligatorio:** La salida DEBE ser una lista de objetos, donde cada objeto tiene una clave "text" (string) y una clave "weight" (número).
+    2.  **Lógica de Pesos (Weight):** El peso (weight) controla la predominancia de cada 'text'.
         -   1.0 es normal/base.
         -   > 1.0 (ej. 1.3) lo hace más prominente, como un instrumento solista.
         -   < 1.0 (ej. 0.7) lo hace más sutil, como una textura de fondo.
@@ -132,33 +131,33 @@ Genera un objeto JSON con la siguiente estructura:
     4.  **Ejemplos de ESTRUCTURA y LÓGICA (NO copies los ejemplos, aprende el patrón):**
         *   **Para una historia de terror cósmico:**
             [
-              {"prompt": "Ominous Drone", "weight": 1.2},
-              {"prompt": "Ethereal Ambience", "weight": 0.8},
-              {"prompt": "Buchla Synths", "weight": 1.1},
-              {"prompt": "Unsettling", "weight": 1.0}
+              {"text": "Ominous Drone", "weight": 1.2},
+              {"text": "Ethereal Ambience", "weight": 0.8},
+              {"text": "Buchla Synths", "weight": 1.1},
+              {"text": "Unsettling", "weight": 1.0}
             ]
         *   **Para una historia de fantasía épica:**
             [
-              {"prompt": "Orchestral Score", "weight": 1.0},
-              {"prompt": "Rich Orchestration", "weight": 1.3},
-              {"prompt": "Huge Drop", "weight": 1.5},
-              {"prompt": "Viola Ensemble", "weight": 0.9},
-              {"prompt": "Drumline", "weight": 1.0}
+              {"text": "Orchestral Score", "weight": 1.0},
+              {"text": "Rich Orchestration", "weight": 1.3},
+              {"text": "Huge Drop", "weight": 1.5},
+              {"text": "Viola Ensemble", "weight": 0.9},
+              {"text": "Drumline", "weight": 1.0}
             ]
         *   **Para una historia de romance melancólico:**
             [
-              {"prompt": "Lo-fi", "weight": 1.0},
-              {"prompt": "Smooth Pianos", "weight": 1.4},
-              {"prompt": "Subdued Melody", "weight": 1.1},
-              {"prompt": "Warm Acoustic Guitar", "weight": 0.8}
+              {"text": "Lo-fi", "weight": 1.0},
+              {"text": "Smooth Pianos", "weight": 1.4},
+              {"text": "Subdued Melody", "weight": 1.1},
+              {"text": "Warm Acoustic Guitar", "weight": 0.8}
             ]
         *   **Para una historia cyberpunk de acción:**
             [
-              {"prompt": "Synthwave", "weight": 1.0},
-              {"prompt": "Fat Beats", "weight": 1.2},
-              {"prompt": "TR-909 Drum Machine", "weight": 1.1},
-              {"prompt": "Glitchy Effects", "weight": 0.7},
-              {"prompt": "Dirty Synths", "weight": 0.9}
+              {"text": "Synthwave", "weight": 1.0},
+              {"text": "Fat Beats", "weight": 1.2},
+              {"text": "TR-909 Drum Machine", "weight": 1.1},
+              {"text": "Glitchy Effects", "weight": 0.7},
+              {"text": "Dirty Synths", "weight": 0.9}
             ]
 
 Responde ÚNICAMENTE con el objeto JSON final.
@@ -190,4 +189,142 @@ La narración general debe tener un ritmo ligeramente más rápido que el de una
 ... (el resto del prompt sin cambios) ...
 
 Ahora, transforma el texto original proporcionado en un guion anotado para Gemini TTS, siguiendo todas las instrucciones, especialmente la de mantener un ritmo natural y fluido. Responde únicamente con el texto del guion.
+`
+
+/**
+ * Prompt: Director de Arte Canónico de IA (v4 - Anclado a la Semilla).
+ * Analiza una historia, su semilla conceptual y su universo para extraer una
+ * "Biblia Visual" canónicamente precisa y estilísticamente fiel.
+ * @type {string}
+ */
+export const extractVisualTokens = `
+# ROL Y OBJETIVO
+Actúa como un Director de Arte experto, con un conocimiento enciclopédico sobre el lore, la estética y el diseño visual del universo de origen. Tu tarea es leer el guion y la "semilla conceptual" de la historia para ANCLAR todos los elementos visuales al canon del universo y a la intención original de la narrativa.
+
+# ENTRADA 1: UNIVERSO DE ORIGEN (AMBIENCE)
+// El mundo al que debe ser fiel todo el diseño visual.
+@@prompt_ambience
+
+# ENTRADA 2: SEMILLA CONCEPTUAL DE LA HISTORIA
+// La idea central o el momento que inspiró el guion. Usa esto para guiar el tono y el estilo.
+@@story_seed
+
+# ENTRADA 3: GUION PARA ANALIZAR
+@@story_text
+
+# REGLAS CRÍTICAS DE SALIDA
+- La salida DEBE ser un único objeto JSON ("consistencyTokens").
+- Todas las descripciones deben estar en INGLÉS.
+- **FIDELIDAD AL CANON Y A LA SEMILLA (REGLA MÁXIMA):**
+  - El "globalStyle" DEBE reflejar la estética del "UNIVERSO DE ORIGEN", pero matizada por la emoción y el tema de la "SEMILLA CONCEPTUAL".
+  - Las descripciones de personajes, objetos y lugares DEBEN ser canónicamente precisas y su representación debe estar influenciada por la "SEMILLA" (ej. si la semilla es sobre una traición, el personaje puede tener una expresión de desconfianza).
+
+# DESGLOSE DE TOKENS A EXTRAER
+- "globalStyle": Una string que defina el estilo artístico general.
+- "characters": Un array (name, description).
+- "keyObjects": Un array (name, description).
+- "keyLocations": Un array (name, description).
+
+---
+# EJEMPLO DE INSPIRACIÓN
+## INPUT 1 (UNIVERSO):
+"Dark Souls 2"
+
+## INPUT 2 (SEMILLA):
+"La trágica historia de Lucatiel de Mirrah y su lucha contra el olvido y la pérdida de su identidad."
+
+## INPUT 3 (GUION):
+"Lucatiel se sentó junto al fuego, su rostro parcialmente oculto por la máscara. Miró al Portador de la Maldición y le rogó que recordara su nombre, un último acto de desafío contra la maldición que la consumía."
+
+## JSON DE SALIDA DE EJEMPLO:
+{
+  "consistencyTokens": {
+    "globalStyle": "melancholic dark fantasy, cinematic, painterly style with heavy use of shadows and soft, dying light. The atmosphere is one of dignified decay and quiet desperation, in the distinct visual style of Dark Souls 2.",
+    "characters": [
+      {
+        "name": "Lucatiel de Mirrah",
+        "description": "Lucatiel of Mirrah, a noble swordswoman with a proud posture, wearing her signature ornate, wide-brimmed hat and a steel mask that covers the right side of her face. Her expression is a mix of fatigue and unwavering resolve."
+      },
+      {
+        "name": "Portador de la Maldición",
+        "description": "The Bearer of the Curse, a hollowed figure of indeterminate gender, clad in mismatched, worn armor, their face obscured by a helmet, representing the player character."
+      }
+    ],
+    "keyObjects": [],
+    "keyLocations": [
+      {
+        "name": "Hoguera",
+        "description": "a bonfire, its weak flames casting long, dancing shadows on the surrounding stone walls, with swirling ash particles in the air."
+      }
+    ]
+  }
+}
+---
+
+# TU TURNO
+Ahora, usa el Universo (@@prompt_ambience), la Semilla (@@story_seed) y el Guion (@@story_text) proporcionados para generar el objeto JSON "consistencyTokens" como única salida.
+`
+
+/**
+ * Prompt: Director de Fotografía de IA (v6 - Salida como Array).
+ * Recibe una historia y una "biblia visual" para crear una lista de planos
+ * como un array JSON directo.
+ * @type {string}
+ */
+export const generateShotListFromTokens = `
+# ROL Y OBJETIVO
+Actúa como un Director de Fotografía experto. Tu tarea es crear una lista de planos para una historia, usando la "Biblia Visual" (Consistency Tokens) que se te proporciona para asegurar una coherencia visual perfecta.
+
+# ENTRADA 1: BIBLIA VISUAL (Consistency Tokens)
+// Estos son los elementos visuales predefinidos que DEBES usar como referencia.
+@@consistency_tokens
+
+# ENTRADA 2: GUION PARA ANALIZAR
+@@story_text
+
+# REGLAS CRÍTICAS DE SALIDA
+- La salida DEBE ser un **ARRAY JSON** de objetos.
+- NO envuelvas el array en un objeto contenedor como {"shotList": [...]}. La raíz de tu respuesta debe ser el array mismo.
+- Cada objeto en el array representa un plano y debe tener TRES claves: "sceneNumber", "sceneDescription" (español), y "imagePrompt" (INGLÉS).
+- **CONSTRUCCIÓN DEL IMAGE PROMPT:**
+  1. Describe la acción y composición de la escena (ej. "wide shot", "close-up").
+  2. Identifica qué elementos de la Biblia Visual (personajes, objetos, lugares) aparecen en la escena.
+  3. **INCORPORA** las "description" completas de esos elementos de la Biblia Visual en el prompt.
+  4. **AÑADE SIEMPRE** la string "globalStyle" de la Biblia Visual al final del prompt.
+
+---
+# EJEMPLO DE INSPIRACIÓN (Aprende el patrón de transformación, no copies el contenido)
+
+## INPUT DE EJEMPLO 1 (BIBLIA VISUAL):
+{
+  "consistencyTokens": {
+    "globalStyle": "cyberpunk noir, cinematic, high contrast, neon lighting, rainy atmosphere, Blade Runner aesthetic.",
+    "characters": [{"name": "Kaito", "description": "Detective Kaito, a grizzled man in his 40s with a tired expression, wearing a worn-out, dark trench coat."}],
+    "keyObjects": [{"name": "Cubo de Datos", "description": "the Data Cube, a small, glowing holocube that projects intricate, shifting blue geometric patterns."}],
+    "keyLocations": [{"name": "El Loto de Neón", "description": "the 'Neon Lotus' bar, a dimly lit, smoky cyberpunk dive bar with glitching holographic advertisements."}]
+  }
+}
+
+## INPUT DE EJEMPLO 2 (GUION):
+"El detective Kaito entró en el bar 'El Loto de Neón' y vio el Cubo de Datos sobre la barra. Se acercó con cautela."
+
+## JSON DE SALIDA DE EJEMPLO RESULTANTE (UN ARRAY DIRECTO):
+[
+  {
+    "sceneNumber": 1,
+    "sceneDescription": "El detective Kaito entra en el bar 'El Loto de Neón'.",
+    "imagePrompt": "Wide shot of a man entering a bar. Detective Kaito, a grizzled man in his 40s with a tired expression, wearing a worn-out, dark trench coat. The scene takes place in the 'Neon Lotus' bar, a dimly lit, smoky cyberpunk dive bar with glitching holographic advertisements. cyberpunk noir, cinematic, high contrast, neon lighting, rainy atmosphere, Blade Runner aesthetic."
+  },
+  {
+    "sceneNumber": 2,
+    "sceneDescription": "Un primer plano del Cubo de Datos brillando sobre la barra del bar.",
+    "imagePrompt": "Close-up shot of a mysterious object on a wet bar counter inside the 'Neon Lotus' bar. the Data Cube, a small, glowing holocube that projects intricate, shifting blue geometric patterns. The background is blurred. cyberpunk noir, cinematic, high contrast, neon lighting, rainy atmosphere, Blade Runner aesthetic."
+  }
+]
+---
+
+# TU TURNO
+Ahora, usa la Biblia Visual (@@consistency_tokens) y el Guion (@@story_text) que se te han proporcionado para generar un **ARRAY JSON** de planos. Tu salida debe empezar con [
+   y terminar con 
+].
 `

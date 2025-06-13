@@ -214,7 +214,7 @@ export const generateFinalPackage = async (genAI, ambience, story) => {
               items: {
                 type: Type.OBJECT,
                 properties: {
-                  prompt: {
+                  text: {
                     type: Type.STRING
                   },
                   weight: {
@@ -222,9 +222,6 @@ export const generateFinalPackage = async (genAI, ambience, story) => {
                   }
                 }
               }
-            },
-            image_prompt: {
-              type: Type.STRING
             }
           },
           propertyOrdering: [
@@ -232,8 +229,7 @@ export const generateFinalPackage = async (genAI, ambience, story) => {
             'story',
             'narrator_tone_es',
             'suggested_voice_name',
-            'music_cues',
-            'image_prompt'
+            'music_cues'
           ]
         }
       }
@@ -244,12 +240,11 @@ export const generateFinalPackage = async (genAI, ambience, story) => {
       !output.title ||
       !output.story ||
       !output.narrator_tone_es ||
-      !output.music_cues ||
-      !output.image_prompt
+      !output.music_cues
     ) {
       throw new HttpError({
         status: 400,
-        message: `[Server ERROR] output.title, output.story, output.narrator_tone_es, output.music_cues, output.image_prompt do not exist`
+        message: `[Server ERROR] output.title, output.story, output.narrator_tone_es, output.music_cues do not exist`
       })
     } else {
       console.log(

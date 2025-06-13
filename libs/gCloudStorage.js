@@ -15,10 +15,6 @@ export const uploadFileToGCS = async (localFilePath, destinationPath) => {
       })
     }
     // Initializations
-    // const storage = new Storage({
-    //   projectId: process.env.JCCG_CODE_PROJECTID,
-    //   keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
-    // })
     const storage = new Storage()
     const bucketName = process.env.GCS_BUCKET_NAME
     // Detects the content type

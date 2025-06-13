@@ -109,4 +109,8 @@ router.post('/story', authGoogleAI, generateController.story)
 
 router.post('/voice', authGoogleAI, generateController.voice)
 
+router.post('/lyria-music', authGoogleAI, generateController.lyriaMusic)
+
+router.post('/images', authGoogleAI, generateController.images)
+
 export default router
