@@ -67,10 +67,11 @@ export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
 
 export const generateCreativeDirection = async (genAI, ambience, seed) => {
   try {
+    console.log(`[Server] Selected seed: ${seed.seed_text}`)
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateCreativeDirection
       .replaceAll('@@prompt_ambience', ambience)
-      .replaceAll('@@story_seed', seed)
+      .replaceAll('@@story_seed', seed.seed_text)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
