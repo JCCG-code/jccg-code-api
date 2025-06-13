@@ -1,10 +1,22 @@
 services:
   my-api:
-    build: .
+    build:
+      context: .
+      target: development
     ports:
       - '4500:4500'
-    volumes:
-      - .:/app
-      - /app/node_modules
     env_file:
       - ./.env
+    develop:
+      watch:
+        - path: .
+          action: sync
+          target: /usr/src/app
+          ignore:
+            - node_modules/
+            - .git/
+            - .env
+        - path: package.json
+          action: rebuild
+        - path: pnpm-lock.yaml
+          action: rebuild

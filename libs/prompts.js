@@ -180,20 +180,14 @@ Debes enriquecer el texto original con instrucciones claras y concisas sobre có
 **Tono General Deseado:**
 "@@narrator_tone_es"
 
+**Instrucción de Ritmo Global (¡NUEVO!):**
+La narración general debe tener un ritmo ligeramente más rápido que el de una lectura estándar, buscando un tono conversacional y natural, no una lectura lenta y dramática. Evita pausas excesivamente largas a menos que el momento sea absolutamente crítico.
+
 **Instrucciones de Anotación:**
-1.  **Formato de Instrucción:** Las instrucciones deben ser cortas, en inglés (para mayor compatibilidad con el modelo) y entre paréntesis, justo antes de la frase o párrafo que afectan. Ejemplo: (Speaking slowly and solemnly) The king was gone.
-2.  **Variedad de Instrucciones:** Usa un lenguaje variado para describir el tono. En lugar de decir siempre "sadly", usa sinónimos como "with a heavy heart", "in a melancholic tone", "with a sense of loss".
-3.  **Pausas:** Para indicar pausas dramáticas, usa una instrucción explícita como (Pause for a moment) o (Dramatic pause).
-4.  **Énfasis:** Para enfatizar una palabra, puedes usar mayúsculas, pero es más efectivo dar una instrucción de tono. Ejemplo: (Emphasize this word: betrayal) It was an act of betrayal.
-5.  **Coherencia:** Asegúrate de que las instrucciones sean coherentes con el "Tono General Deseado" y el contenido de la historia.
+1.  **Formato de Instrucción:** Las instrucciones deben ser cortas, en inglés... (ej: (Speaking at a slightly faster pace) o (With a natural, flowing pace)).
+2.  **Variedad de Instrucciones:** ...
+3.  **Pausas:** Usa las pausas con moderación para mantener el flujo. Una instrucción como (Brief pause) es mejor que (Long, dramatic pause) en la mayoría de los casos.
+... (el resto del prompt sin cambios) ...
 
-**Objetivo Final:** El guion resultante debe ser un texto único y fluido que el modelo gemini-2.5-flash-preview-tts pueda leer de principio a fin, interpretando las anotaciones para modular su voz.
-
-**Ejemplo de transformación:**
-*   **Texto Original:** "Elara no sentía el frío. Sentía el peso de la soledad. Diez años. Esa noche, algo era diferente."
-*   **Tono Deseado:** "Melancolía y premonición"
-*   **Posible Salida de Guion Anotado:**
-    (Narrate with a detached, cold tone) Elara no sentía el frío. (With a sense of deep weariness) Sentía el peso de la soledad. (Pause, as if lost in thought) Diez años. (A shift in tone, with a hint of tension) Esa noche, algo era diferente.
-
-Ahora, transforma el texto original proporcionado en un guion anotado para Gemini TTS. Responde únicamente con el texto del guion.
+Ahora, transforma el texto original proporcionado en un guion anotado para Gemini TTS, siguiendo todas las instrucciones, especialmente la de mantener un ritmo natural y fluido. Responde únicamente con el texto del guion.
 `

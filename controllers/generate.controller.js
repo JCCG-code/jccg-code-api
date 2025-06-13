@@ -20,7 +20,7 @@ export const story = async (req, res) => {
   if (!body.ambience) {
     return res.status(400).json({
       status: 'FAILED',
-      data: { error: 'model or ambience are required in body parameters' }
+      data: { error: 'ambience are required in body parameters' }
     })
   }
   if (!req.genAI) {
@@ -102,9 +102,18 @@ export const voice = async (req, res) => {
       body.story,
       body.tone
     )
-    console.log(TTSStory)
+    // Generating voice
+    // Info log
+    console.log(
+      '[Server] FFmpeg is transforming audio to mp3 file. Please wait...'
+    )
+    const voiceGen = await generateVoice.generateGeminiVoice(
+      req.genAI,
+      TTSStory,
+      body.suggested_voice_name
+    )
     // Return statement
-    return res.status(200).send({ status: 'OK' })
+    return res.status(200).send({ status: 'OK', data: voiceGen })
   } catch (err) {
     res
       .status(err?.status || 500)
