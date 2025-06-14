@@ -3,6 +3,7 @@ import { Type } from '@google/genai'
 import dotenv from 'dotenv'
 // Local files
 import * as prompts from '../libs/prompts.js'
+import Job from '../models/Job.model.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
@@ -261,8 +262,11 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
         await new Job(newJob).save()
         console.log('[Mongoose] Object created')
       } else {
-        await Job.findOneAndUpdate({ prompt: body.ambience }, newJob)
-        console.log('[Mongoose] Object updated')
+        // Deletes object
+        await Job.findByIdAndDelete(existingJob._id)
+        // Creates a new one
+        await new Job(newJob).save()
+        console.log('[Mongoose] Object created')
       }
       // Return statement
       return output

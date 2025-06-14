@@ -1,3 +1,4 @@
+import HttpError from '../errors/HttpError.js'
 import Job from '../models/Job.model.js'
 
 function normalize(str) {
@@ -25,12 +26,17 @@ export const getOneJob = async (req, res) => {
     const match = prompts.find(
       (item) => normalize(item.prompt) === normalizedQuery
     )
-    if (match && match.prompt) {
-      // Extracts selected job
-      const selectedJob = await Job.findOne({ prompt: match.prompt })
-      // Return statement
-      return res.status(200).send({ status: 'OK', data: selectedJob })
+    if (!match || !match.prompt) {
+      throw new HttpError({
+        status: 401,
+        message:
+          '[Server ERROR] Ambience from query paramenters not found in our systems'
+      })
     }
+    // Extracts selected job
+    const selectedJob = await Job.findOne({ prompt: match.prompt })
+    // Return statement
+    return res.status(200).send({ status: 'OK', data: selectedJob })
   } catch (err) {
     res
       .status(err?.status || 500)
