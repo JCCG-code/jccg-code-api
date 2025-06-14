@@ -1,6 +1,6 @@
 # 🎥 Cinematic AI Storytelling Pipeline 🤖
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/TU_USUARIO/TU_REPOSITORIO/main.yml?branch=main)](https://github.com/TU_USUARIO/TU_REPOSITORIO/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/JCCG-Code/jccg-code-api/main.yml?branch=main)](https://github.com/JCCG-Code/jccg-code-api/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-blue.svg)](https://nodejs.org/)
 [![Made with Gemini & Imagen](https://img.shields.io/badge/Made%20with-Gemini%20%26%20Imagen-8A2BE2.svg)](https://ai.google.dev/)
@@ -89,8 +89,8 @@ Sigue estos pasos para poner en marcha el proyecto en tu entorno local.
 1.  **Clona el repositorio:**
 
     ```bash
-    git clone https://github.com/TU_USUARIO/TU_REPOSITORIO.git
-    cd TU_REPOSITORIO
+    git clone https://github.com/JCCG-Code/jccg-code-api.git
+    cd jccg-code-api
     ```
 
 2.  **Instala las dependencias:**
