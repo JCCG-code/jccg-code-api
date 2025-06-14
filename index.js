@@ -7,6 +7,7 @@ dotenv.config()
 
 // Routers
 import generateRouter from './routers/generate.router.js'
+import tempRouter from './routers/temp.router.js'
 
 // Initializations
 const app = express()
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }))
 
 // Routes
 app.use('/api/generate', generateRouter)
+app.use('/api/temp', tempRouter)
 
 // Mongoose connection
 mongoose
