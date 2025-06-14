@@ -39,6 +39,10 @@ export const getUsedSeeds = async (ambience) => {
   }
 }
 
+/**
+ *
+ * @param ambience
+ */
 export async function countUnusedSeeds(ambience) {
   try {
     // Get unused seeds
@@ -56,6 +60,10 @@ export async function countUnusedSeeds(ambience) {
   }
 }
 
+/**
+ *
+ * @param ambience
+ */
 export async function getAndUseNextSeed(ambience) {
   try {
     // Get unused seeds and updates to used

@@ -1,6 +1,8 @@
 // Packages
 import { Type } from '@google/genai'
 import dotenv from 'dotenv'
+import fs from 'fs/promises'
+import { v4 as uuidv4 } from 'uuid'
 // Local files
 import * as prompts from '../libs/prompts.js'
 // Errors
@@ -46,7 +48,8 @@ export const extractVisualTokens = async (
                       description: {
                         type: Type.STRING
                       }
-                    }
+                    },
+                    propertyOrdering: ['name', 'description']
                   }
                 },
                 keyObjects: {
@@ -60,7 +63,8 @@ export const extractVisualTokens = async (
                       description: {
                         type: Type.STRING
                       }
-                    }
+                    },
+                    propertyOrdering: ['name', 'description']
                   }
                 },
                 keyLocations: {
@@ -74,7 +78,8 @@ export const extractVisualTokens = async (
                       description: {
                         type: Type.STRING
                       }
-                    }
+                    },
+                    propertyOrdering: ['name', 'description']
                   }
                 }
               }
@@ -117,39 +122,94 @@ export const generateShotListFromTokens = async (genAI, tokens, story) => {
       config: {
         responseMimeType: 'application/json',
         responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            sceneNumber: {
-              type: Type.INTEGER
-            },
-            sceneDescription: {
-              type: Type.INTEGER
-            },
-            imagePrompt: {
-              type: Type.INTEGER
+          type: Type.OBJECT,
+          properties: {
+            shotList: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  sceneNumber: {
+                    type: Type.INTEGER
+                  },
+                  sceneDescription: {
+                    type: Type.STRING
+                  },
+                  imagePrompt: {
+                    type: Type.STRING
+                  }
+                },
+                propertyOrdering: [
+                  'sceneNumber',
+                  'sceneDescription',
+                  'imagePrompt'
+                ]
+              }
             }
           },
-          propertyOrdering: ['sceneNumber', 'sceneDescription', 'imagePrompt']
+          propertyOrdering: ['shotList']
         }
       }
     })
     // Extract output
     const output = JSON.parse(responseData.text)
-    console.log(output)
     // Checks output
-    if (
-      !output.sceneNumber ||
-      !output.sceneDescription ||
-      !output.imagePrompt
-    ) {
+    if (!output.shotList) {
       throw new HttpError({
         status: 400,
-        message: `[Server ERROR] output.sceneNumber, output.sceneDescription or output.imagePrompt does not exist`
+        message: `[Server ERROR] output.shotList does not exist`
       })
     }
     console.log(`[Server] All shots list have been created successfully`)
     // Return statement
     return output
+  } catch (error) {
+    throw new HttpError({
+      status: error?.status || 500,
+      message: error?.message || error
+    })
+  }
+}
+
+export const generateImagesFromShotList = async (genAI, shotList) => {
+  try {
+    // Pararell image generation exec
+    const imageGenerationPromises = shotList.map((shot) => {
+      return (async () => {
+        // Generating image
+        const response = await genAI.models.generateImages({
+          model: process.env.GEMINI_MODEL_IMAGE,
+          prompt: shot.imagePrompt,
+          config: {
+            numberOfImages: 1,
+            aspectRatio: '9:16'
+          }
+        })
+        // Extracts imageBytes and mimeType
+        const { imageBytes, mimeType } = response.generatedImages[0].image
+        // Checks possible errors
+        if (!imageBytes || !mimeType) {
+          throw new HttpError({
+            status: 500,
+            message: '[Image ERROR] Error creating an image'
+          })
+        }
+        // Transform to buffer
+        const imageBuffer = Buffer.from(imageBytes, 'base64')
+        // Creates localTempPath
+        const tempFileName = `image-${shot.sceneNumber}-${uuidv4()}.png`
+        const localTempPath = `/tmp/generated_images/${tempFileName}`
+        // Creates the file
+        await fs.mkdir('/tmp/generated_images', { recursive: true })
+        await fs.writeFile(localTempPath, imageBuffer)
+        // Return pararell statement
+        return { sceneNumber: shot.sceneNumber, path: localTempPath }
+      })()
+    })
+    // Promise.all pararell execution
+    const generatedImagesInfo = await Promise.all(imageGenerationPromises)
+    // Return statement
+    return generatedImagesInfo
   } catch (error) {
     throw new HttpError({
       status: error?.status || 500,

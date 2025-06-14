@@ -2,7 +2,7 @@
  * Clase para representar errores HTTP con un estado y mensaje.
  * Extiende la clase Error nativa.
  * @class HttpError
- * @extends {Error}
+ * @augments {Error}
  */
 export default class HttpError extends Error {
   /**

@@ -1,0 +1,40 @@
+{
+  "consistencyTokens": {
+    "characters": [
+      {
+        "description": "A solitary figure, clad in practical, weathered adventuring gear. Their initial cautious demeanor gives way to a posture of profound shock and a trembling hand after touching the crystal, reflecting the overwhelming sensory invasion and the crushing burden of ancient knowledge.",
+        "name": "The Protagonist"
+      }
+    ],
+    "globalStyle": "Oppressive, claustrophobic dark fantasy, rendered with the gritty realism and melancholic palette characteristic of Dark Souls 2. The aesthetic emphasizes ancient, subterranean environments, deep shadows, and subtle, unsettling glows, all permeated by a sense of immense, forgotten age and a crushing, existential dread.",
+    "keyLocations": [
+      {
+        "description": "A vast, labyrinthine complex of hand-hewn tunnels and cavernous chambers carved deeply into dense obsidian. The air is thick, humid, and heavy with the smell of damp earth and raw minerals. Surfaces of polished obsidian absorb light, leaving only dancing shadows. The monotonous drip of water echoes, amplifying the profound, oppressive silence and claustrophobia of the immense depths, reflecting the Gyrm's profound isolation.",
+        "name": "Gyrm Mines"
+      }
+    ],
+    "keyObjects": [
+      {
+        "description": "An anomalous geological formation within the obsidian mine, distinct from the surrounding rock. It is a deep, almost black crystal vein, with subtle, internal iridescence that pulsates with a faint, unnatural light. Its surface is unnervingly cold and smooth, almost alive to the touch, indicating its mystical properties and profound connection to the earth's depths.",
+        "name": "Dark Crystal Vein"
+      }
+    ]
+  },
+  "shotList": [
+    {
+      "sceneNumber": 1,
+      "sceneDescription": "El protagonista avanza lentamente por las claustrofóbicas minas Gyrm, la antorcha apenas ilumina la obsidiana.",
+      "imagePrompt": "Long shot of The Protagonist walking through the Gyrm Mines. A solitary figure, clad in practical, weathered adventuring gear. The setting is a vast, labyrinthine complex of hand-hewn tunnels and cavernous chambers carved deeply into dense obsidian. The air is thick, humid, and heavy with the smell of damp earth and raw minerals. Surfaces of polished obsidian absorb light, leaving only dancing shadows. The monotonous drip of water echoes, amplifying the profound, oppressive silence and claustrophobia of the immense depths, reflecting the Gyrm's profound isolation. Oppressive, claustrophobic dark fantasy, rendered with the gritty realism and melancholic palette characteristic of Dark Souls 2. The aesthetic emphasizes ancient, subterranean environments, deep shadows, and subtle, unsettling glows, all permeated by a sense of immense, forgotten age and a crushing, existential dread."
+    },
+    {
+      "sceneNumber": 3,
+      "sceneDescription": "Primer plano de la mano del protagonista tocando el Cristal Oscuro, seguido de un plano de su rostro afectado por la invasión sensorial y el torrente de conocimiento.",
+      "imagePrompt": "Close-up shot of The Protagonist's hand making contact with the Dark Crystal Vein. The hand is trembling. The Dark Crystal Vein is an anomalous geological formation within the obsidian mine, distinct from the surrounding rock. It is a deep, almost black crystal vein, with subtle, internal iridescence that pulsates with a faint, unnatural light. Its surface is unnervingly cold and smooth, almost alive to the touch, indicating its mystical properties and profound connection to the earth's depths. Then, a tight shot of The Protagonist's face. Their initial cautious demeanor gives way to a posture of profound shock, reflecting the overwhelming sensory invasion and the crushing burden of ancient knowledge. Oppressive, claustrophobic dark fantasy, rendered with the gritty realism and melancholic palette characteristic of Dark Souls 2. The aesthetic emphasizes ancient, subterranean environments, deep shadows, and subtle, unsettling glows, all permeated by a sense of immense, forgotten age and a crushing, existential dread."
+    },
+    {
+      "sceneNumber": 4,
+      "sceneDescription": "El protagonista retira su mano del cristal, visiblemente conmocionado y con una expresión de horror silencioso ante la inmensa desolación del conocimiento adquirido.",
+      "imagePrompt": "Medium shot of The Protagonist recoiling from the Dark Crystal Vein. A solitary figure, clad in practical, weathered adventuring gear. Their initial cautious demeanor gives way to a posture of profound shock and a trembling hand after touching the crystal, reflecting the overwhelming sensory invasion and the crushing burden of ancient knowledge. The scene is set in the Gyrm Mines, a vast, labyrinthine complex of hand-hewn tunnels and cavernous chambers carved deeply into dense obsidian. The Dark Crystal Vein is an anomalous geological formation within the obsidian mine, distinct from the surrounding rock. It is a deep, almost black crystal vein, with subtle, internal iridescence that pulsates with a faint, unnatural light. Oppressive, claustrophobic dark fantasy, rendered with the gritty realism and melancholic palette characteristic of Dark Souls 2. The aesthetic emphasizes ancient, subterranean environments, deep shadows, and subtle, unsettling glows, all permeated by a sense of immense, forgotten age and a crushing, existential dread."
+    }
+  ]
+}

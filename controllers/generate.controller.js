@@ -3,6 +3,7 @@ import * as generateStory from '../helpers/generateStory.js'
 import * as generateVoice from '../helpers/generateVoice.js'
 import * as generateMusic from '../helpers/generateMusic.js'
 import * as generateImages from '../helpers/generateImages.js'
+import * as generateVideo from '../helpers/generateVideo.js'
 import * as jsonHandler from '../helpers/jsonHandler.js'
 import * as storySeedDB from '../helpers/db/storySeedDB.js'
 
@@ -151,7 +152,7 @@ export const lyriaMusic = async (req, res) => {
     // Generating music by Lyria Realtime
     const response = await generateMusic.generateLyriaMusic(
       body.music_cues,
-      body.duration + 5
+      body.duration + 2
     )
     // Saving into output json file
     const outputData = await jsonHandler.readOrInitializeJson(outputPath)
@@ -197,9 +198,53 @@ export const images = async (req, res) => {
       visualTokens,
       body.story
     )
-    console.log(shotList)
+    // Generates images and upload to GCS
+    const images = await generateImages.generateImagesFromShotList(
+      req.genAI,
+      shotList.shotList
+    )
+    // Saving into output json file
+    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
+    outputData.generated_images = images
+    await jsonHandler.writeJson(outputPath, outputData)
     // Return statement
-    return res.status(200).send({ status: 'OK' })
+    return res.status(200).send({ status: 'OK', data: images })
+  } catch (err) {
+    res
+      .status(err?.status || 500)
+      .send({ status: 'FAILED', data: { error: err?.message || err } })
+  }
+}
+
+export const videoAssembly = async (req, res) => {
+  const { body } = req
+  // Mandatory fields
+  if (
+    !body.story ||
+    !body.seed ||
+    !body.voiceGen ||
+    !body.lyriaGen ||
+    !body.generated_images
+  ) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: {
+        error:
+          'story, seed, voiceGen, lyriaGen or generated_images are required in body parameters'
+      }
+    })
+  }
+  try {
+    // Assembling video
+    const responseData = await generateVideo.generateVideoAssembly(
+      body.story,
+      body.seed,
+      body.voiceGen,
+      body.lyriaGen,
+      body.generated_images
+    )
+    // Return statement
+    return res.status(200).send({ status: 'OK', data: { responseData } })
   } catch (err) {
     res
       .status(err?.status || 500)

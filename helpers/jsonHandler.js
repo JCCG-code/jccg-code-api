@@ -28,3 +28,32 @@ export const readOrInitializeJson = async (filePath) => {
 export const writeJson = async (filePath, data) => {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8')
 }
+
+/**
+ * Allows to transform markdown into data
+ * @param {string} rawText - json crude text from markdown
+ * @returns
+ */
+export const cleanAndParseJson = (rawText) => {
+  if (rawText.startsWith('```json') && rawText.endsWith('```')) {
+    let cleanedText = rawText.substring(7, rawText.length - 3)
+    cleanedText = cleanedText.trim()
+
+    try {
+      return JSON.parse(cleanedText)
+    } catch (error) {
+      console.error('Error al parsear el JSON después de la limpieza:', error)
+      return null
+    }
+  } else {
+    try {
+      return JSON.parse(rawText.trim())
+    } catch (error) {
+      console.error(
+        'La cadena no tenía formato de bloque de código y falló el parseo directo:',
+        error
+      )
+      return null
+    }
+  }
+}

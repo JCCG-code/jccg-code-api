@@ -72,7 +72,7 @@ Responde ÚNICAMENTE con el objeto JSON.
  * @type {string}
  */
 export const generateStoryFromDirection = `
-**OBJETIVO CRÍTICO DE LONGITUD: La historia resultante DEBE tener entre 200 y 250 palabras. Es un requisito estricto.**
+**OBJETIVO CRÍTICO DE LONGITUD: La historia resultante DEBE tener entre 200 y 250 palabras y estar escrita en ESPAÑOL. Es un requisito estricto.**
 
 Tu tarea es escribir una historia corta y evocadora. **No resumas el lore, dramatízalo.** Céntrate en la experiencia sensorial y emocional del momento, basándote en las siguientes directrices. Debes ser completamente fiel al canon del universo.
 
@@ -262,7 +262,7 @@ Actúa como un Director de Arte experto, con un conocimiento enciclopédico sobr
 ---
 
 # TU TURNO
-Ahora, usa el Universo (@@prompt_ambience), la Semilla (@@story_seed) y el Guion (@@story_text) proporcionados para generar el objeto JSON "consistencyTokens" como única salida.
+Ahora, usa el Universo (prompt_ambience), la Semilla (story_seed) y el Guion (story_text) proporcionados para generar el objeto JSON "consistencyTokens" como única salida.
 `
 
 /**
@@ -309,22 +309,23 @@ Actúa como un Director de Fotografía experto. Tu tarea es crear una lista de p
 "El detective Kaito entró en el bar 'El Loto de Neón' y vio el Cubo de Datos sobre la barra. Se acercó con cautela."
 
 ## JSON DE SALIDA DE EJEMPLO RESULTANTE (UN ARRAY DIRECTO):
-[
-  {
-    "sceneNumber": 1,
-    "sceneDescription": "El detective Kaito entra en el bar 'El Loto de Neón'.",
-    "imagePrompt": "Wide shot of a man entering a bar. Detective Kaito, a grizzled man in his 40s with a tired expression, wearing a worn-out, dark trench coat. The scene takes place in the 'Neon Lotus' bar, a dimly lit, smoky cyberpunk dive bar with glitching holographic advertisements. cyberpunk noir, cinematic, high contrast, neon lighting, rainy atmosphere, Blade Runner aesthetic."
-  },
-  {
-    "sceneNumber": 2,
-    "sceneDescription": "Un primer plano del Cubo de Datos brillando sobre la barra del bar.",
-    "imagePrompt": "Close-up shot of a mysterious object on a wet bar counter inside the 'Neon Lotus' bar. the Data Cube, a small, glowing holocube that projects intricate, shifting blue geometric patterns. The background is blurred. cyberpunk noir, cinematic, high contrast, neon lighting, rainy atmosphere, Blade Runner aesthetic."
-  }
-]
+{
+  "shotList": [
+    {
+      "sceneNumber": 1,
+      "sceneDescription": "El detective Kaito entra en el bar 'El Loto de Neón'.",
+      "imagePrompt": "Wide shot of a man entering a bar. Detective Kaito, a grizzled man in his 40s with a tired expression, wearing a worn-out, dark trench coat. The scene takes place in the 'Neon Lotus' bar, a dimly lit, smoky cyberpunk dive bar with glitching holographic advertisements. cyberpunk noir, cinematic, high contrast, neon lighting, rainy atmosphere, Blade Runner aesthetic."
+    },
+    {
+      "sceneNumber": 2,
+      "sceneDescription": "Un primer plano del Cubo de Datos brillando sobre la barra del bar.",
+      "imagePrompt": "Close-up shot of a mysterious object on a wet bar counter inside the 'Neon Lotus' bar. the Data Cube, a small, glowing holocube that projects intricate, shifting blue geometric patterns. The background is blurred. cyberpunk noir, cinematic, high contrast, neon lighting, rainy atmosphere, Blade Runner aesthetic."
+    },
+    ...
+  ]
+}
 ---
 
 # TU TURNO
-Ahora, usa la Biblia Visual (@@consistency_tokens) y el Guion (@@story_text) que se te han proporcionado para generar un **ARRAY JSON** de planos. Tu salida debe empezar con [
-   y terminar con 
-].
+Ahora, usa la Biblia Visual (consistency_tokens) y el Guion (story_text) que se te han proporcionado para generar un **ARRAY JSON** de planos.
 `

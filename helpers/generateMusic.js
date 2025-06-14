@@ -2,10 +2,8 @@
 import dotenv from 'dotenv'
 import { GoogleGenAI } from '@google/genai'
 import { v4 as uuidv4 } from 'uuid'
-import fs from 'fs/promises'
 // Local files
 import * as ffmpegLib from '../libs/ffmpeg.js'
-import * as gCloudStorageLib from '../libs/gCloudStorage.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
@@ -64,15 +62,7 @@ export const generateLyriaMusic = async (music_cues, duration) => {
           const localTempPath = `/tmp/${tempFileName}`
           // Creates the file
           await ffmpegLib.saveMp3File(localTempPath, audioBuffer, 48000, 2)
-          // Upload file to GCS
-          const destinationPath = `music/${process.env.JCCG_CODE_PROJECTID}/${tempFileName}`
-          const publicUrl = await gCloudStorageLib.uploadFileToGCS(
-            localTempPath,
-            destinationPath
-          )
-          // Deletes temp file
-          await fs.unlink(localTempPath)
-          resolve({ publicUrl })
+          resolve({ localTempPath })
         } catch (stopError) {
           reject(stopError)
         }
