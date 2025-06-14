@@ -6,6 +6,8 @@ import * as mm from 'music-metadata'
 // Local files
 import * as prompts from '../libs/prompts.js'
 import * as ffmpegLib from '../libs/ffmpeg.js'
+// Models
+import Job from '../models/Job.model.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
 

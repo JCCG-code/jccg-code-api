@@ -182,7 +182,7 @@ export const generateStoryFromDirection = async (
   }
 }
 
-export const generateFinalPackage = async (genAI, ambience, story) => {
+export const generateFinalPackage = async (genAI, ambience, story, seed) => {
   try {
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateFinalPackage
@@ -250,6 +250,20 @@ export const generateFinalPackage = async (genAI, ambience, story) => {
       console.log(
         `[Server] The final package about ${ambience} have been created successfully`
       )
+      // Saving new job
+      const newJob = {
+        prompt: ambience,
+        seed,
+        story: output
+      }
+      const existingJob = await Job.findOne({ prompt: ambience })
+      if (!existingJob) {
+        await new Job(newJob).save()
+        console.log('[Mongoose] Object created')
+      } else {
+        await Job.findOneAndUpdate({ prompt: body.ambience }, newJob)
+        console.log('[Mongoose] Object updated')
+      }
       // Return statement
       return output
     }

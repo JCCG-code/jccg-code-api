@@ -4,23 +4,10 @@ import * as generateVoice from '../helpers/generateVoice.js'
 import * as generateMusic from '../helpers/generateMusic.js'
 import * as generateImages from '../helpers/generateImages.js'
 import * as generateVideo from '../helpers/generateVideo.js'
-import * as jsonHandler from '../helpers/jsonHandler.js'
 import * as storySeedDB from '../helpers/db/storySeedDB.js'
+// Models
+import Job from '../models/Job.model.js'
 
-// Path output file
-const outputPath = '/tmp/output.json'
-
-/**
- * Genera una historia basada en un modelo y una ambientación proporcionados.
- * @async
- * @function story
- * @memberof module:controllers/generateController
- * @param {object} req - Objeto de solicitud Express.
- * `req.body` debe contener `model` y `ambience`.
- * Se espera que `req.genAI` haya sido adjuntado por el middleware `authGoogleAI`.
- * @param {object} res - Objeto de respuesta Express.
- * @returns {Promise<void>}
- */
 export const story = async (req, res) => {
   const { body } = req
   // Mandatory fields
@@ -73,13 +60,9 @@ export const story = async (req, res) => {
     const finalPackage = await generateStory.generateFinalPackage(
       req.genAI,
       body.ambience,
-      story.story
+      story.story,
+      seed.seed_text
     )
-    // Saving into output json file
-    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
-    outputData.story = finalPackage
-    outputData.seed = seed.seed_text
-    await jsonHandler.writeJson(outputPath, outputData)
     // Return statement
     return res.status(200).send({ status: 'OK', data: finalPackage })
   } catch (err) {
@@ -124,10 +107,18 @@ export const voice = async (req, res) => {
       TTSStory,
       body.suggested_voice_name
     )
-    // Saving into output json file
-    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
-    outputData.voiceGen = voiceGen
-    await jsonHandler.writeJson(outputPath, outputData)
+    // Update instance
+    const existingJob = await Job.findOne({
+      'story.story': body.story,
+      'story.narrator_tone_es': body.tone,
+      'story.suggested_voice_name': body.suggested_voice_name
+    })
+    if (!existingJob) {
+      console.log('[Mongoose] Existing Job was not found')
+    } else {
+      await Job.findOneAndUpdate({ _id: existingJob._id }, { voiceGen })
+      console.log('[Mongoose] Object updated')
+    }
     // Return statement
     return res.status(200).send({ status: 'OK', data: voiceGen })
   } catch (err) {
@@ -154,10 +145,20 @@ export const lyriaMusic = async (req, res) => {
       body.music_cues,
       body.duration + 2
     )
-    // Saving into output json file
-    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
-    outputData.lyriaGen = response
-    await jsonHandler.writeJson(outputPath, outputData)
+    // Update instance
+    const existingJob = await Job.findOne({
+      'voiceGen.duration': body.duration,
+      'story.music_cues': body.music_cues
+    })
+    if (!existingJob) {
+      console.log('[Mongoose] Existing Job was not found')
+    } else {
+      await Job.findOneAndUpdate(
+        { _id: existingJob._id },
+        { lyriaGen: response }
+      )
+      console.log('[Mongoose] Object updated')
+    }
     // Return statement
     return res.status(200).send({ status: 'OK', data: response })
   } catch (err) {
@@ -203,10 +204,19 @@ export const images = async (req, res) => {
       req.genAI,
       shotList.shotList
     )
-    // Saving into output json file
-    const outputData = await jsonHandler.readOrInitializeJson(outputPath)
-    outputData.generated_images = images
-    await jsonHandler.writeJson(outputPath, outputData)
+    // Update instance
+    const existingJob = await Job.findOne({
+      prompt: body.ambience
+    })
+    if (!existingJob) {
+      console.log('[Mongoose] Existing Job was not found')
+    } else {
+      await Job.findOneAndUpdate(
+        { _id: existingJob._id },
+        { generated_images: images }
+      )
+      console.log('[Mongoose] Object updated')
+    }
     // Return statement
     return res.status(200).send({ status: 'OK', data: images })
   } catch (err) {
@@ -243,6 +253,19 @@ export const videoAssembly = async (req, res) => {
       body.lyriaGen,
       body.generated_images
     )
+    // Update instance
+    const existingJob = await Job.findOne({
+      seed: body.seed
+    })
+    if (!existingJob) {
+      console.log('[Mongoose] Existing Job was not found')
+    } else {
+      await Job.findOneAndUpdate(
+        { _id: existingJob._id },
+        { finalVideo: responseData }
+      )
+      console.log('[Mongoose] Object updated')
+    }
     // Return statement
     return res.status(200).send({ status: 'OK', data: { responseData } })
   } catch (err) {
