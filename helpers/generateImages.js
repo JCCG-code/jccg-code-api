@@ -5,6 +5,7 @@ import fs from 'fs/promises'
 import { v4 as uuidv4 } from 'uuid'
 // Local files
 import * as prompts from '../libs/prompts.js'
+import * as gCloudStorageLib from '../libs/gCloudStorage.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
@@ -202,8 +203,16 @@ export const generateImagesFromShotList = async (genAI, shotList) => {
         // Creates the file
         await fs.mkdir('/tmp/generated_images', { recursive: true })
         await fs.writeFile(localTempPath, imageBuffer)
+        // Upload file to GCS
+        const destinationPath = `images/${process.env.JCCG_CODE_PROJECTID}/${tempFileName}`
+        const publicUrl = await gCloudStorageLib.uploadFileToGCS(
+          localTempPath,
+          destinationPath
+        )
+        // Deletes temp file
+        fs.unlink(localTempPath)
         // Return pararell statement
-        return { sceneNumber: shot.sceneNumber, path: localTempPath }
+        return { sceneNumber: shot.sceneNumber, path: publicUrl }
       })()
     })
     // Promise.all pararell execution

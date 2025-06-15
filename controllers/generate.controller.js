@@ -229,26 +229,18 @@ export const images = async (req, res) => {
 export const videoAssembly = async (req, res) => {
   const { body } = req
   // Mandatory fields
-  if (
-    !body.story ||
-    !body.seed ||
-    !body.voiceGen ||
-    !body.lyriaGen ||
-    !body.generated_images
-  ) {
+  if (!body.voiceGen || !body.lyriaGen || !body.generated_images) {
     return res.status(400).json({
       status: 'FAILED',
       data: {
         error:
-          'story, seed, voiceGen, lyriaGen or generated_images are required in body parameters'
+          'voiceGen, lyriaGen or generated_images are required in body parameters'
       }
     })
   }
   try {
     // Assembling video
     const responseData = await generateVideo.generateVideoAssembly(
-      body.story,
-      body.seed,
       body.voiceGen,
       body.lyriaGen,
       body.generated_images
@@ -267,7 +259,7 @@ export const videoAssembly = async (req, res) => {
       console.log('[Mongoose] Object updated')
     }
     // Return statement
-    return res.status(200).send({ status: 'OK', data: { responseData } })
+    return res.status(200).send({ status: 'OK', data: responseData })
   } catch (err) {
     res
       .status(err?.status || 500)

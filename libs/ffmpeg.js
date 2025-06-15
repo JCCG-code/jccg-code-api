@@ -74,7 +74,7 @@ export const saveMp4File = async (args) => {
   const command = 'ffmpeg'
 
   return new Promise((resolve, reject) => {
-    console.log(`[FFmpeg] Iniciando proceso...`)
+    console.log(`[FFmpeg] Emsambling video. Please wait...`)
     const ffmpegProcess = spawn(command, args)
 
     let stderrOutput = ''
@@ -84,13 +84,12 @@ export const saveMp4File = async (args) => {
 
     ffmpegProcess.stderr.on('data', (data) => {
       const output = data.toString()
-      console.log(`[FFmpeg Progress]: ${output}`)
       stderrOutput += output
     })
 
     ffmpegProcess.on('close', (code) => {
       if (code === 0) {
-        console.log('[FFmpeg] Proceso completado con éxito.')
+        console.log('[FFmpeg] Video assembled successfully')
         resolve()
       } else {
         console.error(`[FFmpeg] Proceso finalizó con código de error: ${code}`)
@@ -147,14 +146,10 @@ export function buildTiktokVideoArgsWithFades(params, options = {}) {
   let filterComplex = ''
   const fadeOutStartTime = durationPerScene - fadeDuration
   imagePaths.forEach((_, i) => {
-    // --- ÚNICO CAMBIO REQUERIDO ---
-    // Eliminamos la cadena scale+pad y solo nos aseguramos del formato de píxeles y el fundido.
-    // FFmpeg usará el tamaño original de la imagen, que ya es correcto.
     const fade = `fade=t=in:st=0:d=${fadeDuration},fade=t=out:st=${fadeOutStartTime}:d=${fadeDuration}`
     filterComplex += `[${i}:v]format=yuv420p,${fade}[v${i}];`
   })
 
-  // Concatenación y mezcla de audio (sin cambios)
   const videoStreams = imagePaths.map((_, i) => `[v${i}]`).join('')
   filterComplex += `${videoStreams}concat=n=${sceneCount}:v=1:a=0[outv];`
 
@@ -164,7 +159,6 @@ export function buildTiktokVideoArgsWithFades(params, options = {}) {
 
   args.push('-filter_complex', filterComplex)
 
-  // Parámetros de salida (sin cambios)
   args.push('-map', '[outv]', '-map', '[outa]')
   args.push(
     '-c:v',

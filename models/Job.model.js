@@ -38,12 +38,12 @@ const JobSchema = new mongoose.Schema(
     },
 
     voiceGen: {
-      localTempPath: String,
+      publicUrl: String,
       duration: Number
     },
 
     lyriaGen: {
-      localTempPath: String
+      publicUrl: String
     },
 
     generated_images: [GeneratedImageSchema],
