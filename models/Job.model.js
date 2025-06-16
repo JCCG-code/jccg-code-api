@@ -8,10 +8,27 @@ const MusicCueSchema = new mongoose.Schema(
   { _id: false }
 )
 
-const GeneratedImageSchema = new mongoose.Schema(
+const SceneSchema = new mongoose.Schema(
+  {
+    description: { type: String, required: true },
+    duration_seconds: { type: Number, required: true }
+  },
+  { _id: false }
+)
+
+const CuttingScriptEntrySchema = new mongoose.Schema(
   {
     sceneNumber: { type: Number, required: true },
-    path: { type: String, required: true }
+    start_time: { type: Number, required: true },
+    end_time: { type: Number, required: true }
+  },
+  { _id: false }
+)
+
+const GeneratedVideoClipSchema = new mongoose.Schema(
+  {
+    sceneNumber: { type: Number, required: true },
+    publicUrl: { type: String, required: true }
   },
   { _id: false }
 )
@@ -19,22 +36,25 @@ const GeneratedImageSchema = new mongoose.Schema(
 const JobSchema = new mongoose.Schema(
   {
     prompt: {
-      // El prompt original del usuario, ej: "Dark Souls 2"
       type: String,
       unique: true,
       required: true
     },
     seed: {
       type: String,
-      unique: true
+      unique: true,
+      required: true
     },
 
     story: {
-      title: String,
-      story: String,
-      narrator_tone_es: String,
-      suggested_voice_name: String,
-      music_cues: [MusicCueSchema]
+      title: { type: String, required: true },
+      chosenTone: { type: String, required: true },
+      narrationScript: { type: String, required: true },
+      narratorTone_es: { type: String, required: true },
+      suggestedVoiceName: { type: String, required: true },
+      music_cues: [MusicCueSchema],
+      storyboard: [SceneSchema],
+      cuttingScript: [CuttingScriptEntrySchema]
     },
 
     voiceGen: {
@@ -46,7 +66,7 @@ const JobSchema = new mongoose.Schema(
       publicUrl: String
     },
 
-    generated_images: [GeneratedImageSchema],
+    videoClips: [GeneratedVideoClipSchema],
 
     finalVideo: {
       publicUrl: String
@@ -59,6 +79,8 @@ const JobSchema = new mongoose.Schema(
     timestamps: true
   }
 )
+
+JobSchema.index({ prompt: 1, seed: 1 }, { unique: true })
 
 const Job = mongoose.model('Job', JobSchema)
 

@@ -4,6 +4,7 @@ import * as generateVoice from '../helpers/generateVoice.js'
 import * as generateMusic from '../helpers/generateMusic.js'
 import * as generateImages from '../helpers/generateImages.js'
 import * as generateVideo from '../helpers/generateVideo.js'
+import * as generateVideos from '../helpers/generateVideos.js'
 import * as storySeedDB from '../helpers/db/storySeedDB.js'
 // Models
 import Job from '../models/Job.model.js'
@@ -26,7 +27,6 @@ export const story = async (req, res) => {
   try {
     // Gets used seeds
     const usedSeeds = await storySeedDB.getUsedSeeds(body.ambience)
-    const seedTexts = usedSeeds.map((it) => it.seed_text)
     // Count unused seeds
     const unusedSeeds = await storySeedDB.countUnusedSeeds(body.ambience)
     if (unusedSeeds < 5) {
@@ -34,34 +34,53 @@ export const story = async (req, res) => {
       const newSeeds = await generateStory.generateStorySeeds(
         req.genAI,
         body.ambience,
-        seedTexts
+        usedSeeds
       )
       // Saving into DB
       await storySeedDB.addSeeds(body.ambience, newSeeds.story_seeds)
     }
     // Getting one seeds to the new story
-    const seed = await storySeedDB.getAndUseNextSeed(body.ambience)
+    const { story_seed } = await storySeedDB.getAndUseNextSeed(body.ambience)
     // Generating direction
     const direction = await generateStory.generateCreativeDirection(
       req.genAI,
       body.ambience,
-      seed
+      story_seed
     )
-    // Generating story
-    const story = await generateStory.generateStoryFromDirection(
+    // Generating scene outline
+    const { scene_outline } = await generateStory.generateSceneOutline(
       req.genAI,
       body.ambience,
-      seed,
+      story_seed.seed,
       direction.chosen_tone,
       direction.narrative_perspective,
       direction.key_dramatic_moment
+    )
+    // Generating narration script
+    const narration = await generateStory.generateNarrationScript(
+      req.genAI,
+      body.ambience,
+      story_seed.seed,
+      direction.chosen_tone,
+      scene_outline
+    )
+    // Generating cutting script
+    const { cutting_script } = await generateStory.generateCuttingScript(
+      req.genAI,
+      narration.narration_script,
+      narration.estimated_narration_duration,
+      scene_outline,
+      narration.video_duration
     )
     // Generating final package
     const finalPackage = await generateStory.generateFinalPackage(
       req.genAI,
       body.ambience,
-      story.story,
-      seed.seed_text
+      story_seed.seed,
+      direction.chosen_tone,
+      narration.narration_script,
+      scene_outline,
+      cutting_script
     )
     // Return statement
     return res.status(200).send({ status: 'OK', data: finalPackage })
@@ -109,9 +128,9 @@ export const voice = async (req, res) => {
     )
     // Update instance
     const existingJob = await Job.findOne({
-      'story.story': body.story,
-      'story.narrator_tone_es': body.tone,
-      'story.suggested_voice_name': body.suggested_voice_name
+      'story.narrationScript': body.story,
+      'story.narratorTone_es': body.tone,
+      'story.suggestedVoiceName': body.suggested_voice_name
     })
     if (!existingJob) {
       console.log('[Mongoose] Existing Job was not found')
@@ -143,7 +162,7 @@ export const lyriaMusic = async (req, res) => {
     // Generating music by Lyria Realtime
     const response = await generateMusic.generateLyriaMusic(
       body.music_cues,
-      body.duration + 2
+      body.duration + 5
     )
     // Update instance
     const existingJob = await Job.findOne({
@@ -161,6 +180,66 @@ export const lyriaMusic = async (req, res) => {
     }
     // Return statement
     return res.status(200).send({ status: 'OK', data: response })
+  } catch (err) {
+    res
+      .status(err?.status || 500)
+      .send({ status: 'FAILED', data: { error: err?.message || err } })
+  }
+}
+
+export const videos = async (req, res) => {
+  const { body } = req
+  // Mandatory fields
+  if (!body.ambience || !body.story_seed || !body.scene_outline) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: {
+        error:
+          'ambience, seed and scene_outline are required in body parameters'
+      }
+    })
+  }
+  if (!req.genAI) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: { error: 'genAI not provided' }
+    })
+  }
+  try {
+    // Extracts visual tokens
+    const { consistencyTokens } = await generateVideos.generateVisualBible(
+      req.genAI,
+      body.ambience,
+      body.story_seed,
+      body.scene_outline
+    )
+    // Get veo prompts
+    const veoPrompts = await generateVideos.generateVeoPrompts(
+      req.genAI,
+      consistencyTokens,
+      body.scene_outline
+    )
+    // Generates images and upload to GCS
+    const videos = await generateVideos.generateVideos(
+      req.genAI,
+      veoPrompts,
+      body.scene_outline
+    )
+    // Update instance
+    const existingJob = await Job.findOne({
+      prompt: body.ambience
+    })
+    if (!existingJob) {
+      console.log('[Mongoose] Existing Job was not found')
+    } else {
+      await Job.findOneAndUpdate(
+        { _id: existingJob._id },
+        { generated_images: images }
+      )
+      console.log('[Mongoose] Object updated')
+    }
+    // Return statement
+    return res.status(200).send({ status: 'OK', data: videos })
   } catch (err) {
     res
       .status(err?.status || 500)

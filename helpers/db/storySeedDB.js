@@ -6,9 +6,9 @@ import HttpError from '../../errors/HttpError.js'
 export const addSeeds = async (ambience, seeds) => {
   try {
     // Inserting new seeds
-    const seedsToInsert = seeds.map((text) => ({
+    const seedsToInsert = seeds.map((seed) => ({
       ambience: ambience,
-      seed_text: text
+      story_seed: seed
     }))
     // Saving
     await StorySeed.insertMany(seedsToInsert, { ordered: false })
@@ -28,7 +28,7 @@ export const getUsedSeeds = async (ambience) => {
     const response = await StorySeed.find({
       ambience: ambience,
       is_used: true
-    }).select('seed_text -_id')
+    }).select('story_seed -_id')
     // Return statement
     return response
   } catch (error) {
@@ -71,7 +71,7 @@ export async function getAndUseNextSeed(ambience) {
       { ambience: ambience, is_used: false },
       { $set: { is_used: true } },
       { new: false, sort: { createdAt: 1 } }
-    ).select('seed_text -_id')
+    ).select('story_seed -_id')
     // Return statement
     return seed
   } catch (error) {

@@ -1,0 +1,31 @@
+{
+  "consistencyTokens": {
+    "characters": [
+      {
+        "name": "Manscorpion Tark",
+        "description": "A grotesque hybrid creature, half-human, half-scorpion. His upper torso is muscular and humanoid, covered in hardened, dark chitinous plates, while his lower body is that of a large, segmented scorpion. His face is gaunt with elongated features, insectoid eyes, and a somber, burdened expression. He typically stands hunched, and may be adorned with tattered, earth-toned fabric. His posture conveys a deep sense of sorrow and unnatural existence."
+      },
+      {
+        "name": "Scorpioness Najka",
+        "description": "A colossal, monstrous scorpion with the upper body of a distorted, pale human female emerging from its back. Her 'human' features are unsettling, with blank, vacant eyes and an almost skeletal facial structure. Her segmented scorpion body is massive and powerful, often poised menacingly, with a large, venomous stinger. She is a creature of tragic, forced power and unnatural beauty, embodying Aldia's twisted creations."
+      }
+    ],
+    "globalStyle": "Melancholic dark fantasy, cinematic, oppressive atmosphere, high contrast lighting with deep shadows, painterly style focused on decay and grotesque forms. Emphasize tragedy, unnatural life, and quiet desperation within the distinct visual language of Dark Souls 2.",
+    "keyLocations": [
+      {
+        "name": "Shaded Woods (Tark's Area)",
+        "description": "A desolate, fog-laden forest filled with gnarled, ancient trees and crumbling, overgrown ruins. The ground is damp and strewn with debris, creating a perpetually damp and eerie environment. Light struggles to penetrate the dense canopy and pervasive fog, casting an eternal twilight. The air is heavy with a sense of ancient sorrow and hidden dangers."
+      },
+      {
+        "name": "Aldia's Keep (Exterior & Interior)",
+        "description": "A massive, decaying stone fortress, partially overgrown with strange, mutated flora. Its architecture is imposing yet crumbling, hinting at past grandeur now twisted by perverse experimentation. Interiors are dim, lit by eerie green or sickly yellow light, filled with unsettling contraptions, preserved specimens, and a general atmosphere of unnatural science and madness. The air is thick with a sense of dread and corruption."
+      }
+    ],
+    "keyObjects": [
+      {
+        "name": "Ring of Whispers",
+        "description": "A simple, tarnished silver ring with intricate, almost imperceptible etchings. When worn, it allows the wielder to understand the speech of certain creatures. It is an unassuming object that holds significant narrative weight, representing connection and understanding in a world of isolation."
+      }
+    ]
+  }
+}

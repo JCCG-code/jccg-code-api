@@ -9,13 +9,6 @@ import HttpError from '../errors/HttpError.js'
 
 dotenv.config()
 
-/**
- * Allows to create new seeds by reading previous seeds
- * @param {object} genAI - AI Gemini generative
- * @param {string} ambience - Selected ambience from user
- * @param {Array[string]} previousSeeds - All previous seeds already used
- * @returns
- */
 export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
   try {
     // Transform master prompt with desired ambience
@@ -34,7 +27,16 @@ export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
             story_seeds: {
               type: Type.ARRAY,
               items: {
-                type: Type.STRING
+                type: Type.OBJECT,
+                properties: {
+                  seed: {
+                    type: Type.STRING
+                  },
+                  suggested_genre: {
+                    type: Type.STRING
+                  }
+                },
+                propertyOrdering: ['seed', 'suggested_genre']
               }
             }
           },
@@ -68,11 +70,12 @@ export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
 
 export const generateCreativeDirection = async (genAI, ambience, seed) => {
   try {
-    console.log(`[Server] Selected seed: ${seed.seed_text}`)
+    console.log(`[Server] Selected seed: ${seed}`)
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateCreativeDirection
       .replaceAll('@@prompt_ambience', ambience)
-      .replaceAll('@@story_seed', seed.seed_text)
+      .replaceAll('@@story_seed', seed.seed)
+      .replaceAll('@@suggested_genre', seed.suggested_genre)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -127,22 +130,22 @@ export const generateCreativeDirection = async (genAI, ambience, seed) => {
   }
 }
 
-export const generateStoryFromDirection = async (
+export const generateSceneOutline = async (
   genAI,
   ambience,
   seed,
-  tone,
-  storyFocus,
-  keyElement
+  chosenTone,
+  narrativePerspective,
+  keyDramatic
 ) => {
   try {
     // Transform master prompt with desired ambience
-    const promptToSend = prompts.generateStoryFromDirection
+    const promptToSend = prompts.generateSceneOutline
       .replaceAll('@@prompt_ambience', ambience)
       .replaceAll('@@story_seed', seed)
-      .replaceAll('@@chosen_tone', tone)
-      .replaceAll('@@narrative_perspective', storyFocus)
-      .replaceAll('@@key_dramatic_moment', keyElement)
+      .replaceAll('@@chosen_tone', chosenTone)
+      .replaceAll('@@narrative_perspective', narrativePerspective)
+      .replaceAll('@@key_dramatic_moment', keyDramatic)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -152,25 +155,37 @@ export const generateStoryFromDirection = async (
         responseSchema: {
           type: Type.OBJECT,
           properties: {
-            story: {
-              type: Type.STRING
+            scene_outline: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  description: {
+                    type: Type.STRING
+                  },
+                  duration_seconds: {
+                    type: Type.INTEGER
+                  }
+                },
+                propertyOrdering: ['description', 'duration_seconds']
+              }
             }
           },
-          propertyOrdering: ['story']
+          propertyOrdering: ['scene_outline']
         }
       }
     })
     // Extract output
     const output = JSON.parse(responseData.text)
     // Checks output
-    if (!output.story) {
+    if (!output.scene_outline || output.scene_outline.length < 1) {
       throw new HttpError({
         status: 400,
-        message: `[Server ERROR] output.story does not exist`
+        message: `[Server ERROR] output.scene_outline does not exist`
       })
     } else {
       console.log(
-        `[Server] The story from direction about ${ambience} have been done successfully`
+        `[Server] The scene outline about ${ambience} have been done successfully`
       )
       // Return statement
       return output
@@ -183,12 +198,167 @@ export const generateStoryFromDirection = async (
   }
 }
 
-export const generateFinalPackage = async (genAI, ambience, story, seed) => {
+export const generateNarrationScript = async (
+  genAI,
+  ambience,
+  seed,
+  chosenTone,
+  sceneOutline
+) => {
+  try {
+    // Get total duration scene
+    const totalDuration = sceneOutline.reduce((sum, currentScene) => {
+      return sum + currentScene.duration_seconds
+    }, 0)
+    // Transform master prompt with desired ambience
+    const promptToSend = prompts.generateMasterNarration
+      .replaceAll('@@prompt_ambience', ambience)
+      .replaceAll('@@story_seed', seed)
+      .replaceAll('@@chosen_tone', chosenTone)
+      .replaceAll('@@scene_outline_json', JSON.stringify(sceneOutline, null, 2))
+      .replaceAll('@@total_duration', totalDuration)
+    // Generating text
+    const responseData = await genAI.models.generateContent({
+      model: process.env.GEMINI_MODEL_TEXT,
+      contents: promptToSend,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            narration_script: {
+              type: Type.STRING
+            },
+            estimated_narration_duration: {
+              type: Type.STRING
+            },
+            video_duration: {
+              type: Type.STRING
+            }
+          },
+          propertyOrdering: [
+            'narration_script',
+            'estimated_narration_duration',
+            'video_duration'
+          ]
+        }
+      }
+    })
+    // Extract output
+    const output = JSON.parse(responseData.text)
+    // Checks output
+    if (
+      !output.narration_script ||
+      !output.estimated_narration_duration ||
+      !output.video_duration
+    ) {
+      throw new HttpError({
+        status: 400,
+        message: `[Server ERROR] output of narration script does not exist`
+      })
+    } else {
+      console.log(
+        `[Server] The narration about ${ambience} have been done successfully`
+      )
+      // Return statement
+      return output
+    }
+  } catch (error) {
+    throw new HttpError({
+      status: error?.status || 500,
+      message: error?.message || error
+    })
+  }
+}
+
+export const generateCuttingScript = async (
+  genAI,
+  narration,
+  narrationDuration,
+  sceneOutline,
+  videoDuration
+) => {
+  try {
+    // Transform master prompt with desired ambience
+    const promptToSend = prompts.generateCuttingScript
+      .replaceAll('@@narration_script', narration)
+      .replaceAll('@@narration_duration', narrationDuration)
+      .replaceAll('@@scene_outline_json', JSON.stringify(sceneOutline, null, 2))
+      .replaceAll('@@video_duration', videoDuration)
+    // Generating text
+    const responseData = await genAI.models.generateContent({
+      model: process.env.GEMINI_MODEL_TEXT,
+      contents: promptToSend,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            cutting_script: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  sceneNumber: {
+                    type: Type.INTEGER
+                  },
+                  start_time: {
+                    type: Type.NUMBER
+                  },
+                  end_time: {
+                    type: Type.NUMBER
+                  }
+                },
+                propertyOrdering: ['sceneNumber', 'start_time', 'end_time']
+              }
+            }
+          },
+          propertyOrdering: ['cutting_script']
+        }
+      }
+    })
+    // Extract output
+    const output = JSON.parse(responseData.text)
+    // Checks output
+    if (!output.cutting_script) {
+      throw new HttpError({
+        status: 400,
+        message: `[Server ERROR] output.cutting_script does not exist`
+      })
+    } else {
+      console.log(`[Server] The cutting script have been done successfully`)
+      // Return statement
+      return output
+    }
+  } catch (error) {
+    throw new HttpError({
+      status: error?.status || 500,
+      message: error?.message || error
+    })
+  }
+}
+
+export const generateFinalPackage = async (
+  genAI,
+  ambience,
+  seed,
+  chosenTone,
+  narration,
+  sceneOutline,
+  cuttingScript
+) => {
   try {
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateFinalPackage
       .replaceAll('@@prompt_ambience', ambience)
-      .replaceAll('@@story_text', story)
+      .replaceAll('@@story_seed', seed)
+      .replaceAll('@@chosen_tone', chosenTone)
+      .replaceAll('@@narration_script', narration)
+      .replaceAll('@@scene_outline_json', JSON.stringify(sceneOutline, null, 2))
+      .replaceAll(
+        '@@cutting_script_json',
+        JSON.stringify(cuttingScript, null, 2)
+      )
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -201,13 +371,19 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
             title: {
               type: Type.STRING
             },
-            story: {
+            seed: {
               type: Type.STRING
             },
-            narrator_tone_es: {
+            narrationScript: {
               type: Type.STRING
             },
-            suggested_voice_name: {
+            chosenTone: {
+              type: Type.STRING
+            },
+            narratorTone_es: {
+              type: Type.STRING
+            },
+            suggestedVoiceName: {
               type: Type.STRING
             },
             music_cues: {
@@ -221,16 +397,54 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
                   weight: {
                     type: Type.NUMBER
                   }
-                }
+                },
+                propertyOrdering: ['text', 'weight']
+              }
+            },
+            storyboard: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  description: {
+                    type: Type.STRING
+                  },
+                  duration_seconds: {
+                    type: Type.INTEGER
+                  }
+                },
+                propertyOrdering: ['description', 'duration_seconds']
+              }
+            },
+            cuttingScript: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  sceneNumber: {
+                    type: Type.INTEGER
+                  },
+                  start_time: {
+                    type: Type.NUMBER
+                  },
+                  end_time: {
+                    type: Type.NUMBER
+                  }
+                },
+                propertyOrdering: ['sceneNumber', 'start_time', 'end_time']
               }
             }
           },
           propertyOrdering: [
             'title',
-            'story',
-            'narrator_tone_es',
-            'suggested_voice_name',
-            'music_cues'
+            'seed',
+            'narrationScript',
+            'chosenTone',
+            'narratorTone_es',
+            'suggestedVoiceName',
+            'music_cues',
+            'storyboard',
+            'cuttingScript'
           ]
         }
       }
@@ -239,13 +453,13 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
     const output = JSON.parse(responseData.text)
     if (
       !output.title ||
-      !output.story ||
-      !output.narrator_tone_es ||
-      !output.music_cues
+      !output.seed ||
+      !output.narrationScript ||
+      !output.chosenTone
     ) {
       throw new HttpError({
         status: 400,
-        message: `[Server ERROR] output.title, output.story, output.narrator_tone_es, output.music_cues do not exist`
+        message: `[Server ERROR] output final package do not exist`
       })
     } else {
       console.log(
@@ -254,8 +468,17 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
       // Saving new job
       const newJob = {
         prompt: ambience,
-        seed,
-        story: output
+        seed: output.seed,
+        story: {
+          title: output.title,
+          chosenTone: output.chosenTone,
+          narrationScript: output.narrationScript,
+          narratorTone_es: output.narratorTone_es,
+          suggestedVoiceName: output.suggestedVoiceName,
+          music_cues: output.music_cues,
+          storyboard: output.storyboard,
+          cuttingScript: output.cuttingScript
+        }
       }
       const existingJob = await Job.findOne({ prompt: ambience })
       if (!existingJob) {

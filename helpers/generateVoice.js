@@ -8,6 +8,8 @@ import fs from 'fs/promises'
 import * as prompts from '../libs/prompts.js'
 import * as ffmpegLib from '../libs/ffmpeg.js'
 import * as gCloudStorageLib from '../libs/gCloudStorage.js'
+// Models
+import Job from '../models/Job.model.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
@@ -15,10 +17,19 @@ dotenv.config()
 
 export const generateGeminiTTScript = async (genAI, story, tone) => {
   try {
+    const currentJob = await Job.findOne({ 'story.narrationScript': story })
+    // Get total duration scene
+    const totalDuration = currentJob.story.storyboard.reduce(
+      (sum, currentScene) => {
+        return sum + currentScene.duration_seconds
+      },
+      0
+    )
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateGeminiTTScript
-      .replaceAll('@@story_text', story)
+      .replaceAll('@@narration_script', story)
       .replaceAll('@@narrator_tone_es', tone)
+      .replaceAll('@@total_duration', totalDuration)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
