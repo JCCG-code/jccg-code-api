@@ -11,28 +11,29 @@ const MusicCueSchema = new mongoose.Schema(
 const GeneratedImageSchema = new mongoose.Schema(
   {
     sceneNumber: { type: Number, required: true },
-    path: { type: String, required: true }
+    publicUrl: { type: String, required: true }
   },
   { _id: false }
 )
 
 const JobSchema = new mongoose.Schema(
   {
-    prompt: {
-      // El prompt original del usuario, ej: "Dark Souls 2"
+    prompt_ambience: {
       type: String,
       unique: true,
       required: true
     },
     seed: {
       type: String,
-      unique: true
+      unique: true,
+      required: true
     },
 
     story: {
       title: String,
       story: String,
       narrator_tone_es: String,
+      narrative_style: String,
       suggested_voice_name: String,
       music_cues: [MusicCueSchema]
     },
@@ -43,10 +44,12 @@ const JobSchema = new mongoose.Schema(
     },
 
     lyriaGen: {
-      publicUrl: String
+      publicUrl: String,
+      duration: Number
     },
 
     generated_images: [GeneratedImageSchema],
+    generated_videos: [GeneratedImageSchema],
 
     finalVideo: {
       publicUrl: String

@@ -3,6 +3,7 @@ import * as generateStory from '../helpers/generateStory.js'
 import * as generateVoice from '../helpers/generateVoice.js'
 import * as generateMusic from '../helpers/generateMusic.js'
 import * as generateImages from '../helpers/generateImages.js'
+import * as generateVideos from '../helpers/generateVideos.js'
 import * as generateVideo from '../helpers/generateVideo.js'
 import * as storySeedDB from '../helpers/db/storySeedDB.js'
 // Models
@@ -26,7 +27,6 @@ export const story = async (req, res) => {
   try {
     // Gets used seeds
     const usedSeeds = await storySeedDB.getUsedSeeds(body.ambience)
-    const seedTexts = usedSeeds.map((it) => it.seed_text)
     // Count unused seeds
     const unusedSeeds = await storySeedDB.countUnusedSeeds(body.ambience)
     if (unusedSeeds < 5) {
@@ -34,24 +34,24 @@ export const story = async (req, res) => {
       const newSeeds = await generateStory.generateStorySeeds(
         req.genAI,
         body.ambience,
-        seedTexts
+        usedSeeds
       )
       // Saving into DB
       await storySeedDB.addSeeds(body.ambience, newSeeds.story_seeds)
     }
     // Getting one seeds to the new story
-    const seed = await storySeedDB.getAndUseNextSeed(body.ambience)
+    const { story_seed } = await storySeedDB.getAndUseNextSeed(body.ambience)
     // Generating direction
     const direction = await generateStory.generateCreativeDirection(
       req.genAI,
       body.ambience,
-      seed
+      story_seed
     )
     // Generating story
-    const story = await generateStory.generateStoryFromDirection(
+    const { story } = await generateStory.generateStoryFromDirection(
       req.genAI,
       body.ambience,
-      seed,
+      story_seed,
       direction.chosen_tone,
       direction.narrative_perspective,
       direction.key_dramatic_moment
@@ -60,8 +60,8 @@ export const story = async (req, res) => {
     const finalPackage = await generateStory.generateFinalPackage(
       req.genAI,
       body.ambience,
-      story.story,
-      seed.seed_text
+      story,
+      story_seed
     )
     // Return statement
     return res.status(200).send({ status: 'OK', data: finalPackage })
@@ -75,12 +75,12 @@ export const story = async (req, res) => {
 export const voice = async (req, res) => {
   const { body } = req
   // Mandatory fields
-  if (!body.story || !body.tone || !body.suggested_voice_name) {
+  if (!body.story || !body.narrative_style || !body.suggested_voice_name) {
     return res.status(400).json({
       status: 'FAILED',
       data: {
         error:
-          'model, story, tone or suggested voice are required in body parameters'
+          'story, narrative_style or suggested_voice_name are required in body parameters'
       }
     })
   }
@@ -95,7 +95,7 @@ export const voice = async (req, res) => {
     const TTSStory = await generateVoice.generateGeminiTTScript(
       req.genAI,
       body.story,
-      body.tone
+      body.narrative_style
     )
     // Generating voice
     // Info log
@@ -103,14 +103,13 @@ export const voice = async (req, res) => {
       '[Server] FFmpeg is transforming audio to mp3 file. Please wait...'
     )
     const voiceGen = await generateVoice.generateGeminiVoice(
-      req.genAI,
       TTSStory,
       body.suggested_voice_name
     )
     // Update instance
     const existingJob = await Job.findOne({
       'story.story': body.story,
-      'story.narrator_tone_es': body.tone,
+      'story.narrative_style': body.narrative_style,
       'story.suggested_voice_name': body.suggested_voice_name
     })
     if (!existingJob) {
@@ -206,7 +205,7 @@ export const images = async (req, res) => {
     )
     // Update instance
     const existingJob = await Job.findOne({
-      prompt: body.ambience
+      prompt_ambience: body.ambience
     })
     if (!existingJob) {
       console.log('[Mongoose] Existing Job was not found')
@@ -226,15 +225,83 @@ export const images = async (req, res) => {
   }
 }
 
-export const videoAssembly = async (req, res) => {
+export const videos = async (req, res) => {
   const { body } = req
   // Mandatory fields
-  if (!body.voiceGen || !body.lyriaGen || !body.generated_images) {
+  if (!body.ambience || !body.story_seed || !body.story || !body.duration) {
     return res.status(400).json({
       status: 'FAILED',
       data: {
         error:
-          'voiceGen, lyriaGen or generated_images are required in body parameters'
+          'ambience, story_seed, story or duration are required in body parameters'
+      }
+    })
+  }
+  if (!req.genAI) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: { error: 'genAI not provided' }
+    })
+  }
+  try {
+    // Extracts visual tokens
+    const visualTokens = await generateImages.extractVisualTokens(
+      req.genAI,
+      body.ambience,
+      body.story_seed,
+      body.story
+    )
+    // Generates shot list from tokens
+    const clipList = await generateVideos.planClipStoryboard(
+      req.genAI,
+      body.duration,
+      body.story
+    )
+    const storyBoardWithImage =
+      await generateVideos.enrichStoryboardWithPrompts(
+        req.genAI,
+        visualTokens,
+        clipList
+      )
+    const imageVideoPrompts = await generateVideos.generateVideoPrompts(
+      req.genAI,
+      storyBoardWithImage
+    )
+    const videosResponse = await generateVideos.createsVideos(
+      req.genAI,
+      imageVideoPrompts
+    )
+    // Update instance
+    const existingJob = await Job.findOne({
+      prompt_ambience: body.ambience
+    })
+    if (!existingJob) {
+      console.log('[Mongoose] Existing Job was not found')
+    } else {
+      await Job.findOneAndUpdate(
+        { _id: existingJob._id },
+        { generated_videos: videosResponse }
+      )
+      console.log('[Mongoose] Object updated')
+    }
+    // Return statement
+    return res.status(200).send({ status: 'OK', data: videosResponse })
+  } catch (err) {
+    res
+      .status(err?.status || 500)
+      .send({ status: 'FAILED', data: { error: err?.message || err } })
+  }
+}
+
+export const videoAssembly = async (req, res) => {
+  const { body } = req
+  // Mandatory fields
+  if (!body.voiceGen || !body.lyriaGen || !body.generated_videos) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: {
+        error:
+          'voiceGen, lyriaGen or generated_videos are required in body parameters'
       }
     })
   }
@@ -243,20 +310,32 @@ export const videoAssembly = async (req, res) => {
     const responseData = await generateVideo.generateVideoAssembly(
       body.voiceGen,
       body.lyriaGen,
-      body.generated_images
+      body.generated_videos
     )
     // Update instance
     const existingJob = await Job.findOne({
-      seed: body.seed
+      voiceGen: body.voiceGen,
+      lyriaGen: body.lyriaGen,
+      generated_videos: body.generated_videos
     })
     if (!existingJob) {
       console.log('[Mongoose] Existing Job was not found')
     } else {
       await Job.findOneAndUpdate(
         { _id: existingJob._id },
-        { finalVideo: responseData }
+        {
+          $set: { finalVideo: responseData },
+          $unset: {
+            voiceGen: {},
+            lyriaGen: {},
+            generated_videos: []
+          }
+        },
+        { new: false }
       )
-      console.log('[Mongoose] Object updated')
+      console.log(
+        '[Mongoose] Object updated: finalVideo added and old fields removed.'
+      )
     }
     // Return statement
     return res.status(200).send({ status: 'OK', data: responseData })

@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import { GoogleGenAI } from '@google/genai'
 import { v4 as uuidv4 } from 'uuid'
 import fs from 'fs/promises'
+import * as mm from 'music-metadata'
 // Local files
 import * as ffmpegLib from '../libs/ffmpeg.js'
 import * as gCloudStorageLib from '../libs/gCloudStorage.js'
@@ -70,9 +71,13 @@ export const generateLyriaMusic = async (music_cues, duration) => {
             localTempPath,
             destinationPath
           )
-          // Deletes temp file
-          await fs.unlink(localTempPath)
-          resolve({ publicUrl })
+          // Extracts audio duration
+          const metadata = await mm.parseFile(localTempPath)
+          const duration = metadata.format.duration || 0
+          // Deletes localTempPath
+          fs.unlink(localTempPath)
+          // Return statement
+          resolve({ publicUrl, duration })
         } catch (stopError) {
           reject(stopError)
         }

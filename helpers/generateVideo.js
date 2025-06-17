@@ -8,7 +8,7 @@ import * as gCloudStorageLib from '../libs/gCloudStorage.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
-const downloadFiles = async (voiceGen, lyriaGen, generated_images) => {
+const downloadFiles = async (voiceGen, lyriaGen, generated_videos) => {
   try {
     // Downloads audio
     const audioPath = await gCloudStorageLib.downloadFileFromGCS(
@@ -20,24 +20,24 @@ const downloadFiles = async (voiceGen, lyriaGen, generated_images) => {
       lyriaGen.publicUrl,
       `/tmp/${uuidv4()}.mp3`
     )
-    // Downloads images
-    const downloadsImages = generated_images.map((image) => {
+    // Downloads videos
+    const downloadsVideos = generated_videos.map((video) => {
       return (async () => {
         // Creates localTempPath
-        const tempFileName = `image-${image.sceneNumber}-${uuidv4()}.png`
-        await fs.mkdir('/tmp/generated_images', { recursive: true })
-        const localTempPath = `/tmp/generated_images/${tempFileName}`
-        const imageTempPath = await gCloudStorageLib.downloadFileFromGCS(
-          image.path,
+        const tempFileName = `video-${video.sceneNumber}-${uuidv4()}.mp4`
+        await fs.mkdir('/tmp/generated_videos', { recursive: true })
+        const localTempPath = `/tmp/generated_videos/${tempFileName}`
+        const videoTempPath = await gCloudStorageLib.downloadFileFromGCS(
+          video.publicUrl,
           localTempPath
         )
-        return { sceneNumber: image.sceneNumber, path: imageTempPath }
+        return { sceneNumber: video.sceneNumber, path: videoTempPath }
       })()
     })
-    // Downloads image in paralell
-    const imagesPathObj = await Promise.all(downloadsImages)
+    // Downloads video in paralell
+    const videosPathObj = await Promise.all(downloadsVideos)
     // Return statement
-    return { audioPath, musicPath, imagesPathObj }
+    return { audioPath, musicPath, videosPathObj }
   } catch (error) {
     throw new HttpError({
       status: error?.status || 500,
@@ -49,33 +49,29 @@ const downloadFiles = async (voiceGen, lyriaGen, generated_images) => {
 export const generateVideoAssembly = async (
   voiceGen,
   lyriaGen,
-  generated_images
+  generated_videos
 ) => {
   try {
     // Downloading files from GCS
-    const { audioPath, musicPath, imagesPathObj } = await downloadFiles(
+    const { audioPath, musicPath, videosPathObj } = await downloadFiles(
       voiceGen,
       lyriaGen,
-      generated_images
+      generated_videos
     )
     // Creates video temp file
     const tempFileName = `${uuidv4()}.mp4`
     const localTempPath = `/tmp/${tempFileName}`
-    // Extracts video duration
-    const metadata = await mm.parseFile(musicPath)
-    const duration = metadata.format.duration || 0
-    // Get image paths
-    const imagePaths = imagesPathObj.map((i) => i.path)
+    // Get video paths
+    const videoPaths = videosPathObj.map((i) => i.path)
     // Building video
-    const getVideoCommand = ffmpegLib.buildTiktokVideoArgsWithFades({
-      imagePaths,
+    const { args, listFilePath } = ffmpegLib.buildVideoFromClipsArgs({
+      videoPaths,
       narrationPath: audioPath,
       musicPath: musicPath,
-      totalDuration: duration,
       outputPath: localTempPath
     })
     // Creates mp4 file
-    await ffmpegLib.saveMp4File(getVideoCommand)
+    await ffmpegLib.saveMp4File(args)
     // Upload file to GCS
     const destinationPath = `video/${process.env.JCCG_CODE_PROJECTID}/${tempFileName}`
     const publicUrl = await gCloudStorageLib.uploadFileToGCS(
@@ -87,10 +83,13 @@ export const generateVideoAssembly = async (
       fs.unlink(audioPath),
       fs.unlink(musicPath),
       fs.unlink(localTempPath),
+      fs.unlink(listFilePath),
       fs.rm('/tmp/generated_images', { recursive: true, force: true }),
+      fs.rm('/tmp/generated_videos', { recursive: true, force: true }),
       gCloudStorageLib.deleteFolderGCS('audio/'),
+      gCloudStorageLib.deleteFolderGCS('music/'),
       gCloudStorageLib.deleteFolderGCS('images/'),
-      gCloudStorageLib.deleteFolderGCS('music/')
+      gCloudStorageLib.deleteFolderGCS('videos/')
     ])
     // Return statement
     return { publicUrl }

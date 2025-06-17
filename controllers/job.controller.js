@@ -19,14 +19,14 @@ export const getOneJob = async (req, res) => {
   }
   try {
     // Extract all initial prompts
-    const prompts = await Job.find({}).select('prompt -_id')
+    const prompts = await Job.find({}).select('prompt_ambience -_id')
     // Normalizing to compare
     const normalizedQuery = normalize(params.ambience)
     // Search and compare
     const match = prompts.find(
-      (item) => normalize(item.prompt) === normalizedQuery
+      (item) => normalize(item.prompt_ambience) === normalizedQuery
     )
-    if (!match || !match.prompt) {
+    if (!match || !match.prompt_ambience) {
       throw new HttpError({
         status: 401,
         message:
@@ -34,7 +34,9 @@ export const getOneJob = async (req, res) => {
       })
     }
     // Extracts selected job
-    const selectedJob = await Job.findOne({ prompt: match.prompt })
+    const selectedJob = await Job.findOne({
+      prompt_ambience: match.prompt_ambience
+    })
     // Return statement
     return res.status(200).send({ status: 'OK', data: selectedJob })
   } catch (err) {

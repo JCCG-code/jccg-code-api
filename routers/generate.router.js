@@ -228,6 +228,7 @@ router.post('/lyria-music', authGoogleAI, generateController.lyriaMusic)
  * }
  */
 router.post('/images', authGoogleAI, generateController.images)
+router.post('/videos', authGoogleAI, generateController.videos)
 
 /**
  * @api {post} /api/generate/video-assembly Ensamblar Vídeo

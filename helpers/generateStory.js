@@ -1,27 +1,24 @@
 // Packages
 import { Type } from '@google/genai'
 import dotenv from 'dotenv'
+import fs from 'fs'
 // Local files
 import * as prompts from '../libs/prompts.js'
+import * as debugFile from '../libs/debugFile.js'
 import Job from '../models/Job.model.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
 dotenv.config()
 
-/**
- * Allows to create new seeds by reading previous seeds
- * @param {object} genAI - AI Gemini generative
- * @param {string} ambience - Selected ambience from user
- * @param {Array[string]} previousSeeds - All previous seeds already used
- * @returns
- */
 export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
   try {
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateStorySeedsWithContext
       .replaceAll('@@prompt_ambience', ambience)
       .replaceAll('@@previous_seeds_list', previousSeeds)
+    // Debug prompt file
+    debugFile.writeDebugFile('generateStorySeedsWithContext', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -34,7 +31,16 @@ export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
             story_seeds: {
               type: Type.ARRAY,
               items: {
-                type: Type.STRING
+                type: Type.OBJECT,
+                properties: {
+                  seed: {
+                    type: Type.STRING
+                  },
+                  suggested_genre: {
+                    type: Type.STRING
+                  }
+                },
+                propertyOrdering: ['seed', 'suggested_genre']
               }
             }
           },
@@ -68,11 +74,14 @@ export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
 
 export const generateCreativeDirection = async (genAI, ambience, seed) => {
   try {
-    console.log(`[Server] Selected seed: ${seed.seed_text}`)
+    console.log(`[Server] Selected seed: ${seed}`)
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateCreativeDirection
       .replaceAll('@@prompt_ambience', ambience)
-      .replaceAll('@@story_seed', seed.seed_text)
+      .replaceAll('@@story_seed', seed.seed)
+      .replaceAll('@@suggested_genre', seed.suggested_genre)
+    // Debug prompt file
+    debugFile.writeDebugFile('generateCreativeDirection', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -139,10 +148,12 @@ export const generateStoryFromDirection = async (
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateStoryFromDirection
       .replaceAll('@@prompt_ambience', ambience)
-      .replaceAll('@@story_seed', seed)
+      .replaceAll('@@story_seed', seed.seed)
       .replaceAll('@@chosen_tone', tone)
       .replaceAll('@@narrative_perspective', storyFocus)
       .replaceAll('@@key_dramatic_moment', keyElement)
+    // Debug prompt file
+    debugFile.writeDebugFile('generateStoryFromDirection', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -188,7 +199,10 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateFinalPackage
       .replaceAll('@@prompt_ambience', ambience)
+      .replaceAll('@@story_seed', seed.seed)
       .replaceAll('@@story_text', story)
+    // Debug prompt file
+    debugFile.writeDebugFile('generateFinalPackage', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -205,6 +219,9 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
               type: Type.STRING
             },
             narrator_tone_es: {
+              type: Type.STRING
+            },
+            narrative_style: {
               type: Type.STRING
             },
             suggested_voice_name: {
@@ -228,6 +245,7 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
           propertyOrdering: [
             'title',
             'story',
+            'narrative_style',
             'narrator_tone_es',
             'suggested_voice_name',
             'music_cues'
@@ -240,6 +258,7 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
     if (
       !output.title ||
       !output.story ||
+      !output.narrative_style ||
       !output.narrator_tone_es ||
       !output.music_cues
     ) {
@@ -253,11 +272,12 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
       )
       // Saving new job
       const newJob = {
-        prompt: ambience,
-        seed,
+        prompt_ambience: ambience,
+        seed: seed.seed,
         story: output
       }
-      const existingJob = await Job.findOne({ prompt: ambience })
+      // Checks existing job
+      const existingJob = await Job.findOne({ prompt_ambience: ambience })
       if (!existingJob) {
         await new Job(newJob).save()
         console.log('[Mongoose] Object created')

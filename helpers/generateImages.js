@@ -83,7 +83,13 @@ export const extractVisualTokens = async (
                     propertyOrdering: ['name', 'description']
                   }
                 }
-              }
+              },
+              propertyOrdering: [
+                'globalStyle',
+                'characters',
+                'keyObjects',
+                'keyLocations'
+              ]
             }
           },
           propertyOrdering: ['consistencyTokens']
@@ -209,8 +215,6 @@ export const generateImagesFromShotList = async (genAI, shotList) => {
           localTempPath,
           destinationPath
         )
-        // Deletes temp file
-        fs.unlink(localTempPath)
         // Return pararell statement
         return { sceneNumber: shot.sceneNumber, path: publicUrl }
       })()

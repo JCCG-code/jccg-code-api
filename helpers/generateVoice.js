@@ -10,15 +10,16 @@ import * as ffmpegLib from '../libs/ffmpeg.js'
 import * as gCloudStorageLib from '../libs/gCloudStorage.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
+import { GoogleGenAI } from '@google/genai'
 
 dotenv.config()
 
-export const generateGeminiTTScript = async (genAI, story, tone) => {
+export const generateGeminiTTScript = async (genAI, story, narrativeStyle) => {
   try {
     // Transform master prompt with desired ambience
     const promptToSend = prompts.generateGeminiTTScript
       .replaceAll('@@story_text', story)
-      .replaceAll('@@narrator_tone_es', tone)
+      .replaceAll('@@narrative_style', narrativeStyle)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -57,8 +58,9 @@ export const generateGeminiTTScript = async (genAI, story, tone) => {
   }
 }
 
-export const generateGeminiVoice = async (genAI, storyToRead, voiceName) => {
+export const generateGeminiVoice = async (storyToRead, voiceName) => {
   try {
+    const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY })
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_VOICE,
@@ -97,8 +99,8 @@ export const generateGeminiVoice = async (genAI, storyToRead, voiceName) => {
     // Extracts audio duration
     const metadata = await mm.parseFile(localTempPath)
     const duration = metadata.format.duration || 0
-    // Deletes temp file
-    await fs.unlink(localTempPath)
+    // Deletes localTempPath
+    fs.unlink(localTempPath)
     // Return statement
     return { publicUrl, duration }
   } catch (error) {

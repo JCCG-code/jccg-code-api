@@ -1,4 +1,6 @@
+import fs from 'fs'
 import { spawn } from 'node:child_process'
+import { v4 as uuidv4 } from 'uuid'
 // Errors
 import HttpError from '../errors/HttpError.js'
 
@@ -78,6 +80,7 @@ export const saveMp4File = async (args) => {
     const ffmpegProcess = spawn(command, args)
 
     let stderrOutput = ''
+    let lastProgressLogTime = 0
     ffmpegProcess.stdout.on('data', (data) => {
       console.log(`[FFmpeg STDOUT]: ${data.toString()}`)
     })
@@ -85,6 +88,24 @@ export const saveMp4File = async (args) => {
     ffmpegProcess.stderr.on('data', (data) => {
       const output = data.toString()
       stderrOutput += output
+      const now = Date.now()
+      if (now - lastProgressLogTime > 2000) {
+        const lines = output.trim().split('\n')
+        const lastLine = lines[lines.length - 1]
+
+        if (lastLine.includes('time=')) {
+          const timeMatch = lastLine.match(/time=(\d{2}:\d{2}:\d{2}\.\d{2})/)
+          const speedMatch = lastLine.match(/speed=\s*([\d.]+)x/)
+
+          const time = timeMatch ? timeMatch[1] : 'N/A'
+          const speed = speedMatch ? speedMatch[1] : 'N/A'
+
+          console.log(
+            `[FFmpeg] Progreso: Tiempo codificado = ${time} | Velocidad = ${speed}x`
+          )
+          lastProgressLogTime = now
+        }
+      }
     })
 
     ffmpegProcess.on('close', (code) => {
@@ -108,74 +129,42 @@ export const saveMp4File = async (args) => {
   })
 }
 
-/**
- *
- * @param params
- * @param options
- */
-export function buildTiktokVideoArgsWithFades(params, options = {}) {
-  const { imagePaths, narrationPath, musicPath, totalDuration, outputPath } =
-    params
+export function buildVideoFromClipsArgs(params, options = {}) {
+  const { videoPaths, narrationPath, musicPath, outputPath } = params
+  const { musicVolume = 0.3 } = options
 
-  const {
-    fadeDuration = 1,
-    musicVolume = 0.3,
-    videoSize = '1080x1920',
-    fps = 25
-  } = options
-
-  const sceneCount = imagePaths.length
-  if (sceneCount === 0) {
-    throw new Error('No se proporcionaron imágenes para el video.')
+  if (!videoPaths || videoPaths.length === 0) {
+    throw new Error('No se proporcionaron clips de video.')
   }
 
-  const durationPerScene = totalDuration / sceneCount
+  const listFilePath = `/tmp/${uuidv4()}-concat-list.txt`
+  const fileContent = videoPaths
+    .map((p) => `file '${p.replace(/'/g, "'\\''")}'`)
+    .join('\n')
+  fs.writeFileSync(listFilePath, fileContent)
+  console.log(`[FFmpeg] Lista generada: ${listFilePath}`)
 
   const args = []
   args.push('-y')
 
-  // Inputs de imagen
-  imagePaths.forEach((path) => {
-    args.push('-loop', '1', '-t', String(durationPerScene), '-i', path)
-  })
+  // Inputs: Música (0), Videos (1), Narración (2)
+  args.push('-i', musicPath)
+  args.push('-f', 'concat', '-safe', '0', '-i', listFilePath)
+  args.push('-i', narrationPath)
 
-  // Inputs de audio
-  args.push('-i', narrationPath, '-i', musicPath)
+  const finalFilterComplex = `[0:a]volume=${musicVolume}[music_bg];[2:a][music_bg]amix=inputs=2:duration=longest[outa]`
+  // ==============================================================================
 
-  // Construcción del filtro complejo simplificado
-  let filterComplex = ''
-  const fadeOutStartTime = durationPerScene - fadeDuration
-  imagePaths.forEach((_, i) => {
-    const fade = `fade=t=in:st=0:d=${fadeDuration},fade=t=out:st=${fadeOutStartTime}:d=${fadeDuration}`
-    filterComplex += `[${i}:v]format=yuv420p,${fade}[v${i}];`
-  })
+  args.push('-filter_complex', finalFilterComplex)
 
-  const videoStreams = imagePaths.map((_, i) => `[v${i}]`).join('')
-  filterComplex += `${videoStreams}concat=n=${sceneCount}:v=1:a=0[outv];`
+  // Mapeo
+  args.push('-map', '1:v')
+  args.push('-map', '[outa]')
 
-  const narrationInputIndex = sceneCount
-  const musicInputIndex = sceneCount + 1
-  filterComplex += `[${musicInputIndex}:a]volume=${musicVolume}[music_bg];[${narrationInputIndex}:a][music_bg]amix=inputs=2:duration=first[outa]`
+  // Codificación
+  args.push('-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest')
 
-  args.push('-filter_complex', filterComplex)
-
-  args.push('-map', '[outv]', '-map', '[outa]')
-  args.push(
-    '-c:v',
-    'libx264',
-    '-preset',
-    'veryfast',
-    '-c:a',
-    'aac',
-    '-b:a',
-    '192k',
-    '-r',
-    String(fps),
-    '-shortest',
-    '-s',
-    videoSize
-  )
   args.push(outputPath)
 
-  return args
+  return { args, listFilePath }
 }

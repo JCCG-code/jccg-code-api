@@ -18,7 +18,11 @@ dotenv.config()
 export const authGoogleAI = async (req, res, next) => {
   try {
     // genAI instance
-    const aiInstance = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY })
+    const aiInstance = new GoogleGenAI({
+      vertexai: true,
+      project: process.env.JCCG_CODE_PROJECTID,
+      location: 'us-central1'
+    })
     if (!aiInstance) {
       throw new HttpError({
         status: 400,
