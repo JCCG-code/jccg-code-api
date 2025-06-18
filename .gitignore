@@ -32,7 +32,6 @@ coverage/
 # Archivos de Documentación Generada (si no quieres versionarla)
 # --------------------------------------------------------------
 # Si generas la documentación HTML con JSDoc y no la quieres en el repo:
-docs/
 apidoc_output/
 
 # Archivos de IDEs y Editores
