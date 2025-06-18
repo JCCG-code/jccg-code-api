@@ -22,7 +22,7 @@ _(Haz clic en la imagen para ver un ejemplo de video generado por el pipeline)_
 
 ---
 
-## 核心 Core Features
+## Core Features
 
 - **Orquestación de Extremo a Extremo (n8n):** Todo el proceso, desde la creación hasta la publicación, es gestionado por un workflow de n8n, asegurando un flujo de trabajo robusto y automatizado.
 - **Generación de Lore y Guion (Gemini):** A partir de una "semilla" de historia almacenada en MongoDB, se generan guiones únicos y narrativas cortas, garantizando una fuente inagotable de contenido original.
@@ -41,20 +41,34 @@ _(Haz clic en la imagen para ver un ejemplo de video generado por el pipeline)_
 
 El sistema funciona como una cadena de montaje automatizada, orquestada por n8n. Cada paso alimenta al siguiente para producir el video final y publicarlo.
 
-````mermaid
-graph TD
-    A[💡 Idea Inicial / Semilla de MongoDB] --> B{Paso 1: Generar Guion con Gemini};
-    B --> C{Paso 2: Creación de Activos con IA de Google};
-    subgraph "Generación de Activos (Paralelo)"
-        C -- Texto --> D[Voz (Gemini TTS)];
-        C -- Mood --> E[Música (Lyria)];
-        C -- Guion/Escenas --> F[Video (Veo 2.0)];
-    end
-    D --> G{Paso 3: Ensamblaje Final con FFmpeg};
-    E --> G;
-    F --> G;
-    G --> H[🎞️ Video Final (.mp4)];
-    H --> I[🚀 Publicar en TikTok y YouTube];
+### Proceso de Creación de Contenido
+
+1.  **💡 Idea Inicial:**
+
+    - Se genera a partir de una semilla de datos en MongoDB.
+
+2.  **🤖 Paso 1: Generación de Guion**
+
+    - Se utiliza Gemini para crear el guion detallado.
+
+3.  **🎨 Paso 2: Creación de Activos (en paralelo)**
+
+    - **Voz:** Se genera el audio con Gemini TTS a partir del texto.
+    - **Música:** Se compone una banda sonora con Lyria basada en el _mood_ del guion.
+    - **Video:** Se crean los clips de video con Veo 2.0 siguiendo las escenas del guion.
+
+4.  **⚙️ Paso 3: Ensamblaje Final**
+
+    - Se utiliza FFmpeg para combinar el video, la voz y la música en un solo archivo.
+
+5.  **🎞️ Resultado: Video Final (.mp4)**
+
+    - El producto final está listo para ser distribuido.
+
+6.  **🚀 Publicación**
+    - El video se sube a las plataformas de TikTok y YouTube.
+
+---
 
 ## 🛠️ Stack Tecnológico
 
@@ -83,6 +97,7 @@ El proyecto está diseñado para ejecutarse de forma contenida y automatizada a 
 ### Instalación y Ejecución
 
 1.  **Clona el repositorio:**
+
     ```bash
     git clone https://github.com/JCCG-Code/jccg-code-api.git
     cd jccg-code-api
@@ -112,6 +127,7 @@ El proyecto está diseñado para ejecutarse de forma contenida y automatizada a 
 
 3.  **Ejecuta el Pipeline:**
     Con Docker en funcionamiento, simplemente levanta el entorno. Esto construirá las imágenes si es necesario y arrancará los servicios. El workflow de n8n debería iniciarse automáticamente y comenzar el proceso.
+
     ```bash
     docker compose up --build
     ```
@@ -143,4 +159,7 @@ Las contribuciones son bienvenidas. Si tienes ideas para mejorar el pipeline, op
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
-````
+
+```
+
+```
