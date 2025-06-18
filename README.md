@@ -17,7 +17,7 @@ Cada ejecución produce un video vertical y atmosférico, con una narración evo
 
 **Ejemplo de Salida:**
 
-[![El Martillo Mudo](https://i.ytimg.com/vi/yLgB7Y7Xy7o/hqdefault.jpg)](https://www.youtube.com/shorts/yLgB7Y7Xy7o)
+[![El Martillo Mudo](https://i.ytimg.com/vi/gZ2IpyXo0ag/hqdefault.jpg)](https://www.youtube.com/shorts/gZ2IpyXo0ag)
 _(Haz clic en la imagen para ver un ejemplo de video generado por el pipeline)_
 
 ---
