@@ -4,39 +4,149 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stories Factory</title>
+    <!-- Importar fuentes de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      /* --- Reseteo y Estilos Globales --- */
+      :root {
+        --bg-color: #1a1a1a;
+        --card-bg-color: #2c2c2c;
+        --primary-text-color: #f0f0f0;
+        --secondary-text-color: #cccccc;
+        --accent-color: #ff9800; /* Un naranja vibrante */
+        --accent-hover-color: #ffb74d;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: sans-serif;
+        font-family: 'Roboto', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--primary-text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      /* --- Contenedor Principal (La "Tarjeta") --- */
+      .container {
+        background-color: var(--card-bg-color);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid #3a3a3a;
+      }
+
+      /* --- Tipografía --- */
+      header h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+        color: #ffffff;
+      }
+
+      main p {
+        font-size: 1.1rem;
         line-height: 1.6;
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 0 20px;
+        color: var(--secondary-text-color);
+        margin-bottom: 32px;
       }
-      h1 {
-        color: #333;
+
+      main h2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 500;
+        color: var(--primary-text-color);
+        margin-bottom: 20px;
+        border-top: 1px solid #444;
+        padding-top: 24px;
       }
-      a {
-        color: #007bff;
+
+      /* --- Botones --- */
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap; /* Para que se vea bien en móviles */
+      }
+
+      .button {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: #1a1a1a;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition:
+          transform 0.2s ease,
+          background-color 0.2s ease;
+      }
+
+      .button:hover {
+        background-color: var(--accent-hover-color);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* --- Footer --- */
+      footer {
+        margin-top: 32px;
+        font-size: 0.9rem;
+        color: #888;
+      }
+
+      footer a {
+        color: var(--secondary-text-color);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      footer a:hover {
+        color: var(--accent-color);
       }
     </style>
   </head>
   <body>
-    <h1>Welcome to Stories Factory</h1>
-    <p>
-      This is the official home for the "Stories Factory" service, an automated
-      content generation and publishing tool.
-    </p>
+    <div class="container">
+      <header>
+        <h1>🏭 Welcome to Stories Factory</h1>
+      </header>
 
-    <h2>Legal Documents</h2>
-    <ul>
-      <li><a href="./TERMS_OF_SERVICE.md">Terms of Service</a></li>
-      <li><a href="./PRIVACY_POLICY.md">Privacy Policy</a></li>
-    </ul>
+      <main>
+        <p>
+          This is the official home for the "Stories Factory" service, an
+          automated content generation and publishing tool.
+        </p>
 
-    <hr />
-    <p>
-      For any questions, please contact:
-      <a href="mailto:jccuadradogracia@gmail.com">jccuadradogracia@gmail.com</a>
-    </p>
+        <h2>Legal Documents</h2>
+        <div class="button-container">
+          <a href="./terms_of_service.html" class="button">Terms of Service</a>
+          <a href="./privacy_policy.html" class="button">Privacy Policy</a>
+        </div>
+      </main>
+
+      <footer>
+        <p>
+          For any questions, please contact:
+          <a href="mailto:jccuadradogracia@gmail.com"
+            >jccuadradogracia@gmail.com</a
+          >
+        </p>
+      </footer>
+    </div>
   </body>
 </html>
