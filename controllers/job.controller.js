@@ -1,5 +1,6 @@
 import HttpError from '../errors/HttpError.js'
 import Job from '../models/Job.model.js'
+// Local files
 
 function normalize(str) {
   return str.toLowerCase().replace(/-/g, ' ').replace(/\s+/g, ' ').trim()

@@ -244,6 +244,7 @@ export const videos = async (req, res) => {
     })
   }
   try {
+    console.log('[Server] Extracting visual tokens...')
     // Extracts visual tokens
     const visualTokens = await generateImages.extractVisualTokens(
       req.genAI,
@@ -251,18 +252,22 @@ export const videos = async (req, res) => {
       body.story_seed,
       body.story
     )
+    console.log('[Server] Extracting a list of clips...')
     // Generates shot list from tokens
     const clipList = await generateVideos.planClipStoryboard(
       req.genAI,
       body.duration,
       body.story
     )
+    console.log('CLip list created: ', JSON.stringify(clipList, null, 2))
+    console.log('[Server] Extracting prompts to images...')
     const storyBoardWithImage =
       await generateVideos.enrichStoryboardWithPrompts(
         req.genAI,
         visualTokens,
         clipList
       )
+    console.log('[Server] Extracting prompts to videos and creating videos...')
     const imageVideoPrompts = await generateVideos.generateVideoPrompts(
       req.genAI,
       storyBoardWithImage

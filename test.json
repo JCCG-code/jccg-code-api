@@ -1,0 +1,25 @@
+{
+  "title": "El Silencio de Drangleic",
+  "story": "El mercader se detuvo ante las ruinas de un gran palacio, su figura exhausta. Se sentó en un trono derruido, observando el polvo milenario con ojos vacíos. De su bolsa gastada, extrajo una piedra pulida, de un mundo ya olvidado. La contempló un instante, sin expresión. Luego, sin emoción, la dejó caer. El débil sonido al tocar las grietas se perdió al instante, ahogado por el vasto silencio ancestral de Drangleic. El mercader permaneció, una sombra del paisaje desolado.",
+  "narrative_style": "Un relato pausado y contemplativo, que evoca desolación y la inmensidad del tiempo.",
+  "narrator_tone_es": "Melancólico, desolado y resignado",
+  "suggested_voice_name": "Gacrux",
+  "music_cues": [
+    {
+      "text": "Desolate Ambient Drone",
+      "weight": 1
+    },
+    {
+      "text": "Ancient Choral Pad",
+      "weight": 1.2
+    },
+    {
+      "text": "Subtle Wind and Dust SFX",
+      "weight": 0.7
+    },
+    {
+      "text": "Melancholic Solo Cello",
+      "weight": 1.1
+    }
+  ]
+}

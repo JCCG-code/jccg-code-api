@@ -11,11 +11,6 @@ import HttpError from '../errors/HttpError.js'
 
 // Initializations
 dotenv.config()
-// const usAI = new GoogleGenAI({
-//   vertexai: true,
-//   project: process.env.JCCG_CODE_PROJECTID,
-//   location: 'us-central1'
-// })
 
 export const planClipStoryboard = async (genAI, duration, story) => {
   try {
@@ -207,6 +202,8 @@ export const createsVideos = async (genAI, imageVideoPrompts) => {
   const randomSeed = Math.floor(Math.random() * 99999)
   // Creates folder
   await fs.mkdir('/tmp/generated_videos', { recursive: true })
+  // Creates genAI instance for images
+  // const genAImage = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY })
   try {
     const resVideos = []
     // Pararell image generation exec

@@ -17,8 +17,6 @@ export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
     const promptToSend = prompts.generateStorySeedsWithContext
       .replaceAll('@@prompt_ambience', ambience)
       .replaceAll('@@previous_seeds_list', previousSeeds)
-    // Debug prompt file
-    debugFile.writeDebugFile('generateStorySeedsWithContext', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -80,8 +78,6 @@ export const generateCreativeDirection = async (genAI, ambience, seed) => {
       .replaceAll('@@prompt_ambience', ambience)
       .replaceAll('@@story_seed', seed.seed)
       .replaceAll('@@suggested_genre', seed.suggested_genre)
-    // Debug prompt file
-    debugFile.writeDebugFile('generateCreativeDirection', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -152,8 +148,6 @@ export const generateStoryFromDirection = async (
       .replaceAll('@@chosen_tone', tone)
       .replaceAll('@@narrative_perspective', storyFocus)
       .replaceAll('@@key_dramatic_moment', keyElement)
-    // Debug prompt file
-    debugFile.writeDebugFile('generateStoryFromDirection', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -201,8 +195,6 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
       .replaceAll('@@prompt_ambience', ambience)
       .replaceAll('@@story_seed', seed.seed)
       .replaceAll('@@story_text', story)
-    // Debug prompt file
-    debugFile.writeDebugFile('generateFinalPackage', promptToSend)
     // Generating text
     const responseData = await genAI.models.generateContent({
       model: process.env.GEMINI_MODEL_TEXT,
@@ -238,7 +230,8 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
                   weight: {
                     type: Type.NUMBER
                   }
-                }
+                },
+                propertyOrdering: ['text', 'weight']
               }
             }
           },
@@ -264,30 +257,23 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
     ) {
       throw new HttpError({
         status: 400,
-        message: `[Server ERROR] output.title, output.story, output.narrator_tone_es, output.music_cues do not exist`
+        message: `[Server ERROR] output.title, output.story, output.narrative_style, output.narrator_tone_es or output.music_cues do not exist`
       })
     } else {
       console.log(
         `[Server] The final package about ${ambience} have been created successfully`
       )
-      // Saving new job
-      const newJob = {
+      // New job
+      const jobData = {
         prompt_ambience: ambience,
         seed: seed.seed,
         story: output
       }
-      // Checks existing job
-      const existingJob = await Job.findOne({ prompt_ambience: ambience })
-      if (!existingJob) {
-        await new Job(newJob).save()
-        console.log('[Mongoose] Object created')
-      } else {
-        // Deletes object
-        await Job.findByIdAndDelete(existingJob._id)
-        // Creates a new one
-        await new Job(newJob).save()
-        console.log('[Mongoose] Object created')
-      }
+      await Job.findOneAndUpdate({ prompt_ambience: ambience }, jobData, {
+        upsert: true,
+        runValidators: true
+      })
+      console.log(`[MongoDB] New object \'${ambience}\' created or updated`)
       // Return statement
       return output
     }
