@@ -17,7 +17,7 @@ Cada ejecución produce un video vertical y atmosférico, con una narración evo
 
 **Ejemplo de Salida:**
 
-[![El Último Lamento del Gigante](https://i.ytimg.com/vi/GW3mY_Fp5ds/hqdefault.jpg)](https://www.youtube.com/shorts/GW3mY_Fp5ds)
+[![El Martillo Mudo](https://i.ytimg.com/vi/yLgB7Y7Xy7o/hqdefault.jpg)](https://www.youtube.com/shorts/yLgB7Y7Xy7o)
 _(Haz clic en la imagen para ver un ejemplo de video generado por el pipeline)_
 
 ---
