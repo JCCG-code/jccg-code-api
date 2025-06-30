@@ -228,6 +228,7 @@ router.post('/lyria-music', authGoogleAI, generateController.lyriaMusic)
  * }
  */
 router.post('/images', authGoogleAI, generateController.images)
+router.post('/image-clip-prev', authGoogleAI, generateController.imageClipPrev)
 router.post('/videos', authGoogleAI, generateController.videos)
 
 /**

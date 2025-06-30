@@ -25,7 +25,7 @@ export const extractVisualTokens = async (
       .replaceAll('@@story_text', story)
     // Generating text
     const responseData = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL_TEXT,
+      model: process.env.GEMINI_MODEL_TEXT_LVL2,
       contents: promptToSend,
       config: {
         responseMimeType: 'application/json',
@@ -96,6 +96,7 @@ export const extractVisualTokens = async (
         }
       }
     })
+    console.log(JSON.stringify(responseData.usageMetadata, null, 2))
     // Extract output
     const output = JSON.parse(responseData.text)
     // Checks output

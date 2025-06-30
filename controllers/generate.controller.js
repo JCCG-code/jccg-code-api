@@ -298,6 +298,74 @@ export const videos = async (req, res) => {
   }
 }
 
+export const imageClipPrev = async (req, res) => {
+  const { body } = req
+  // Mandatory fields
+  if (!body.ambience || !body.story_seed || !body.story || !body.duration) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: {
+        error:
+          'ambience, story_seed, story or duration are required in body parameters'
+      }
+    })
+  }
+  if (!req.genAI) {
+    return res.status(400).json({
+      status: 'FAILED',
+      data: { error: 'genAI not provided' }
+    })
+  }
+  try {
+    console.log('[Server] Extracting visual tokens...')
+    // Extracts visual tokens
+    const visualTokens = await generateImages.extractVisualTokens(
+      req.genAI,
+      body.ambience,
+      body.story_seed,
+      body.story
+    )
+    console.log('[Server] Extracting a list of clips...')
+    // Generates shot list from tokens
+    const clipList = await generateVideos.planClipStoryboard(
+      req.genAI,
+      body.duration,
+      body.story
+    )
+    console.log('CLip list created: ', JSON.stringify(clipList, null, 2))
+    console.log('[Server] Extracting prompts to images...')
+    const storyBoardWithImage =
+      await generateVideos.enrichStoryboardWithPrompts(
+        req.genAI,
+        visualTokens,
+        clipList
+      )
+    const imagesResponse = await generateVideos.createsVideos(
+      req.genAI,
+      storyBoardWithImage
+    )
+    // Update instance
+    const existingJob = await Job.findOne({
+      prompt_ambience: body.ambience
+    })
+    if (!existingJob) {
+      console.log('[Mongoose] Existing Job was not found')
+    } else {
+      await Job.findOneAndUpdate(
+        { _id: existingJob._id },
+        { generated_images: imagesResponse }
+      )
+      console.log('[Mongoose] Object updated')
+    }
+    // Return statement
+    return res.status(200).send({ status: 'OK', data: imagesResponse })
+  } catch (err) {
+    res
+      .status(err?.status || 500)
+      .send({ status: 'FAILED', data: { error: err?.message || err } })
+  }
+}
+
 export const videoAssembly = async (req, res) => {
   const { body } = req
   // Mandatory fields

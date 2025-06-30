@@ -20,7 +20,7 @@ export const planClipStoryboard = async (genAI, duration, story) => {
       .replaceAll('@@story_text', story)
     // Generating text
     const responseData = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL_TEXT,
+      model: process.env.GEMINI_MODEL_TEXT_LVL2,
       contents: promptToSend,
       config: {
         responseMimeType: 'application/json',
@@ -48,6 +48,7 @@ export const planClipStoryboard = async (genAI, duration, story) => {
         }
       }
     })
+    console.log(JSON.stringify(responseData.usageMetadata, null, 2))
     // Extract output
     const output = JSON.parse(responseData.text)
     // Checks output
@@ -76,7 +77,7 @@ export const enrichStoryboardWithPrompts = async (genAI, tokens, clipList) => {
       .replaceAll('@@clip_list_json', JSON.stringify(clipList, null, 2))
     // Generating text
     const responseData = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL_TEXT,
+      model: process.env.GEMINI_MODEL_TEXT_LVL2,
       contents: promptToSend,
       config: {
         responseMimeType: 'application/json',
@@ -108,6 +109,7 @@ export const enrichStoryboardWithPrompts = async (genAI, tokens, clipList) => {
         }
       }
     })
+    console.log(JSON.stringify(responseData.usageMetadata, null, 2))
     // Extract output
     const output = JSON.parse(responseData.text)
     // Checks output

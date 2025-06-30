@@ -1,25 +1,60 @@
 {
-  "title": "El Silencio de Drangleic",
-  "story": "El mercader se detuvo ante las ruinas de un gran palacio, su figura exhausta. Se sentó en un trono derruido, observando el polvo milenario con ojos vacíos. De su bolsa gastada, extrajo una piedra pulida, de un mundo ya olvidado. La contempló un instante, sin expresión. Luego, sin emoción, la dejó caer. El débil sonido al tocar las grietas se perdió al instante, ahogado por el vasto silencio ancestral de Drangleic. El mercader permaneció, una sombra del paisaje desolado.",
-  "narrative_style": "Un relato pausado y contemplativo, que evoca desolación y la inmensidad del tiempo.",
-  "narrator_tone_es": "Melancólico, desolado y resignado",
-  "suggested_voice_name": "Gacrux",
-  "music_cues": [
+  "candidates": [
     {
-      "text": "Desolate Ambient Drone",
-      "weight": 1
-    },
-    {
-      "text": "Ancient Choral Pad",
-      "weight": 1.2
-    },
-    {
-      "text": "Subtle Wind and Dust SFX",
-      "weight": 0.7
-    },
-    {
-      "text": "Melancholic Solo Cello",
-      "weight": 1.1
+      "content": {
+        "parts": [
+          {
+            "text": "{\n  \"story_seeds\": [\n    {\n      \"seed\": \"El último aliento de un hechicero caído, buscando reescribir un destino que se le escapa entre los dedos como arena.\",\n      \"suggested_genre\": \"Tragedia\"\n    },\n    {\n      \"seed\": \"La melancolía de un coleccionista de reliquias, cuyo tesoro más preciado es un recuerdo intangible de un amor perdido.\",\n      \"suggested_genre\": \"Romance Melancólico\"\n    },\n    {\n      \"seed\": \"Los susurros de una armadura olvidada, que atestiguan las batallas y los miedos de los guerreros que la vistieron.\",\n      \"suggested_genre\": \"Terror Psicológico\"\n    },\n    {\n      \"seed\": \"La devoción inquebrantable de un sirviente leal, que sigue esperando el regreso de un señor que ya no existe.\",\n      \"suggested_genre\": \"Devoción y Soledad\"\n    },\n    {\n      \"seed\": \"El eco de una risa infantil en las ruinas de un castillo, una presencia fantasma que recuerda tiempos más luminosos.\",\n      \"suggested_genre\": \"Misterio Fantasmal\"\n    },\n    {\n      \"seed\": \"La amargura de un rey despojado, cuyo orgullo se aferra a los fantasmas de su antigua gloria.\",\n      \"suggested_genre\": \"Drama Histórico\"\n    },\n    {\n      \"seed\": \"El viaje de un peregrino sin nombre, impulsado por un juramento olvidado y la promesa de una curación esquiva.\",\n      \"suggested_genre\": \"Aventura y Fe\"\n    },\n    {\n      \"seed\": \"La desesperación de un artesano, forzando su vida en la creación de un objeto que pueda desafiar la corrupción.\",\n      \"suggested_genre\": \"Creación y Sacrificio\"\n    },\n    {\n      \"seed\": \"Los secretos guardados en el corazón de un bosque ancestral, donde los árboles mismos recuerdan la venida de los dioses.\",\n      \"suggested_genre\": \"Fantasía Épica\"\n    },\n    {\n      \"seed\": \"La contemplación de un alma errante sobre la naturaleza cíclica del poder y la decadencia.\",\n      \"suggested_genre\": \"Reflexión Filosófica\"\n    },\n    {\n      \"seed\": \"El lamento de un cazador de monstruos, atormentado por los rostros de las criaturas que ha matado, incapaz de distinguir el bien del mal.\",\n      \"suggested_genre\": \"Existencial\"\n    },\n    {\n      \"seed\": \"La historia no contada de un grito ahogado durante un ritual oscuro, un fragmento de voluntad que se niega a desaparecer.\",\n      \"suggested_genre\": \"Horror Oculto\"\n    },\n    {\n      \"seed\": \"La soledad de una guardiana en una torre olvidada, cuya vigilia se ha prolongado por siglos, esperando un peligro que quizás nunca llegue.\",\n      \"suggested_genre\": \"Soledad y Deber\"\n    },\n    {\n      \"seed\": \"La perspectiva de un antiguo espejo, que ha reflejado el ascenso y la caída de innumerables civilizaciones, observando la fragilidad de la existencia.\",\n      \"suggested_genre\": \"Observación Cósmica\"\n    }\n  ]\n}"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
     }
-  ]
+  ],
+  "modelVersion": "gemini-2.5-flash-lite-preview-06-17",
+  "usageMetadata": {
+    "promptTokenCount": 836,
+    "candidatesTokenCount": 784,
+    "totalTokenCount": 1620,
+    "promptTokensDetails": [{ "modality": "TEXT", "tokenCount": 836 }]
+  },
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "{\n  \"story_seeds\": [\n    {\n      \"seed\": \"El último susurro de un alma perdida en el Bosque de la Desesperación: un eco fantasmal que revela un pacto olvidado con una entidad oscura y los terribles sacrificios que lo precedieron.\",\n      \"suggested_genre\": \"Misterio\"\n    },\n    {\n      \"seed\": \"La espada olvidada por un caballero caído en la batalla del Santuario de los Huesos: el misterio de su origen y la verdad sobre la promesa que hizo antes de sucumbir.\",\n      \"suggested_genre\": \"Tragedia\"\n    },\n    {\n      \"seed\": \"El susurro de las ruinas del Asentamiento: la historia de una joven aprendiz de hechicera que se vio obligada a ocultar una verdad impactante para proteger a sus seres queridos.\",\n      \"suggested_genre\": \"Drama\"\n    },\n    {\n      \"seed\": \"La profecía de los cráneos de cristal en la Torre de la Oscuridad: una profecía que se materializa en el presente, un enigma que requiere la ayuda de un alquimista para interpretar el futuro\",\n      \"suggested_genre\": \"Aventura\"\n    },\n    {\n      \"seed\": \"La maldición de un tesoro prohibido, guardado en la Cueva de la Sombra: la historia de un mercenario que deberá enfrentarse a sus propias sombras para proteger el equilibrio.\",\n      \"suggested_genre\": \"Terror Psicológico\"\n    },\n    {\n      \"seed\": \"El dilema de un caballero que fue testigo de la destrucción de la ciudad sagrada: ¿Honrar su juramento a un dios caído o buscar su propia redención? ¿Cuál es el costo de la neutralidad?\",\n      \"suggested_genre\": \"Dilema moral\"\n    },\n    {\n      \"seed\": \"La leyenda de una reliquia ancestral, escondida en los restos de un templo abandonado: una búsqueda por un artefacto antiguo que podría cambiar el destino del mundo.\",\n      \"suggested_genre\": \"Aventura\"\n    },\n    {\n      \"seed\": \"La soledad de una bestia sagrada, encarcelada en los calabozos del rey: un misterio que desvela la naturaleza del poder y el sacrificio de los dioses antiguos\",\n      \"suggested_genre\": \"Misterio\"\n    },\n    {\n      \"seed\": \"Un antiguo pacto entre elfos y humanos que se rompió siglos atrás: un evento que causó el descenso a la oscuridad y la destrucción de sus reinos, contado por la última guardiana del Santuario.\",\n      \"suggested_genre\": \"Tragedia\"\n    },\n     {\n      \"seed\": \"Las consecuencias de una promesa rota a un dios olvidado: ¿Se puede reparar la ruina creada por las acciones pasadas?\",\n      \"suggested_genre\": \"Reflexión filosófica\"\n    },\n    {\n      \"seed\": \"El origen del mal que corrompe el Bosque de Cenizas, y el testimonio de un explorador que lo vio crecer.\",\n      \"suggested_genre\": \"Terror psicológico\"\n    }\n  ]\n}"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "avgLogprobs": -0.8652982049713811,
+      "safetyRatings": [
+        {
+          "category": "HARM_CATEGORY_HATE_SPEECH",
+          "probability": "NEGLIGIBLE"
+        },
+        {
+          "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+          "probability": "NEGLIGIBLE"
+        },
+        { "category": "HARM_CATEGORY_HARASSMENT", "probability": "NEGLIGIBLE" },
+        {
+          "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          "probability": "NEGLIGIBLE"
+        }
+      ]
+    }
+  ],
+  "modelVersion": "gemini-1.5-flash-8b-001",
+  "usageMetadata": {
+    "promptTokenCount": 820,
+    "candidatesTokenCount": 677,
+    "totalTokenCount": 1497,
+    "promptTokensDetails": [{ "modality": "TEXT", "tokenCount": 820 }],
+    "candidatesTokensDetails": [{ "modality": "TEXT", "tokenCount": 677 }]
+  }
 }

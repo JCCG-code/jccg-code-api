@@ -8,6 +8,7 @@ import * as debugFile from '../libs/debugFile.js'
 import Job from '../models/Job.model.js'
 // Errors
 import HttpError from '../errors/HttpError.js'
+import { GoogleGenAI } from '@google/genai'
 
 dotenv.config()
 
@@ -22,6 +23,7 @@ export const generateStorySeeds = async (genAI, ambience, previousSeeds) => {
       model: process.env.GEMINI_MODEL_TEXT,
       contents: promptToSend,
       config: {
+        systemInstruction: `Tu tarea es actuar como un experto en el lore y la atmósfera del siguiente universo: "${ambience}".`,
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.OBJECT,
@@ -80,7 +82,7 @@ export const generateCreativeDirection = async (genAI, ambience, seed) => {
       .replaceAll('@@suggested_genre', seed.suggested_genre)
     // Generating text
     const responseData = await genAI.models.generateContent({
-      model: process.env.GEMINI_MODEL_TEXT,
+      model: process.env.GEMINI_MODEL_TEXT_LVL0,
       contents: promptToSend,
       config: {
         responseMimeType: 'application/json',
@@ -238,8 +240,8 @@ export const generateFinalPackage = async (genAI, ambience, story, seed) => {
           propertyOrdering: [
             'title',
             'story',
-            'narrative_style',
             'narrator_tone_es',
+            'narrative_style',
             'suggested_voice_name',
             'music_cues'
           ]

@@ -19,9 +19,7 @@ export const authGoogleAI = async (req, res, next) => {
   try {
     // genAI instance
     const aiInstance = new GoogleGenAI({
-      vertexai: true,
-      project: process.env.JCCG_CODE_PROJECTID,
-      location: 'us-central1'
+      apiKey: process.env.GOOGLE_API_KEY
     })
     if (!aiInstance) {
       throw new HttpError({

@@ -84,7 +84,7 @@ Responde ÚNICAMENTE con el objeto JSON.
  * @type {string}
  */
 export const generateStoryFromDirection = `
-**OBJETIVO CRÍTICO DE LONGITUD: La historia resultante DEBE tener NO MÁS de 100 palabras y estar escrita en ESPAÑOL. Es un requisito estricto.**
+**OBJETIVO CRÍTICO DE LONGITUD: La historia resultante DEBE tener en torno a 150-200 palabras y estar escrita en ESPAÑOL. Es un requisito estricto.**
 
 Tu tarea es escribir una historia corta y evocadora. **No resumas el lore, dramatízalo.** Céntrate en la experiencia sensorial y emocional del momento, basándote en las siguientes directrices. Debes ser completamente fiel al canon del universo.
 
@@ -99,7 +99,7 @@ Tu tarea es escribir una historia corta y evocadora. **No resumas el lore, drama
 1.  **Longitud Obligatoria:** Estrictamente 100 palabras.
 2.  **Narración Inmersiva:** Usa descripciones sensoriales para dar vida a la escena. Muestra, no cuentes.
 3.  **Fidelidad al Tono y Universo:** Tu lenguaje, ritmo e imaginería deben reflejar el "@@chosen_tone" y el mundo de "@@prompt_ambience". Una historia en 'Chernobyl' debe sonar cruda y tensa. Una en 'Harry Potter' puede ser mágica y maravillosa, o sombría y conspirativa, según el tono. Adapta tu estilo.
-4.  **Estructura de Escena:** Organiza el texto en 2-3 párrafos que construyan la atmósfera, lleguen al momento clave y ofrezcan un cierre resonante o ambiguo.
+4.  **Estructura de Escena:** Organiza el texto en 3-4 párrafos que construyan la atmósfera, lleguen al momento clave y ofrezcan un cierre resonante o ambiguo.
 5.  **REGLA DE SEGURIDAD: ENFOQUE ELÍPTICO.** Si el tema es sensible, nunca describas el evento directamente. Usa la elipsis: describe el antes, el después, el silencio, el objeto abandonado. **Implica, no muestres explícitamente.**
 
 Responde únicamente un unico string con el texto de la historia.
